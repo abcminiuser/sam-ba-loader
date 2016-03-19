@@ -35,3 +35,7 @@ if __name__ == "__main__":
         part = part[0]
 
     print 'Discovered Part: %s' % part.get_name()
+
+
+    print 'Erasing Chip...'
+    part.erase_chip(samba)

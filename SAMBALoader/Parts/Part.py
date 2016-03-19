@@ -35,3 +35,8 @@ class SAMBAPart(object):
     @abc.abstractmethod
     def identify(self, samba):
         pass
+
+    @abc.abstractmethod
+    def erase_chip(self, samba):
+        pass
+

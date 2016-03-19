@@ -8,5 +8,13 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-from FlashController import *
-from NVMCTRL import *
+import abc
+
+
+class FlashController(object):
+    __metaclass__ = abc.ABCMeta
+
+
+    @abc.abstractmethod
+    def erase_chip(self, samba):
+        pass
