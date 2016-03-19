@@ -8,12 +8,17 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
+import struct
+
+
+
 class SAMBACommands:
     SET_NORMAL_MODE = 'N'
     GO              = 'G'
     GET_VERSION     = 'V'
     WRITE_WORD      = 'W'
     READ_WORD       = 'w'
+
 
 
 class SAMBA(object):
@@ -30,16 +35,18 @@ class SAMBA(object):
         return value
 
 
-    def _execute(self, command, arguments=None):
-        if not arguments is None:
-            arguments = ','.join(self._to_32bit_hex(a) for a in arguments)
-        else:
+    def _execute(self, command, arguments=None, read_length=None):
+        if arguments is None or len(arguments) is 0:
             arguments = ''
+        elif len(arguments) is 1:
+            arguments = self._to_32bit_hex(arguments[0]) + ','
+        else:
+            arguments = self._to_32bit_hex(arguments[1]) + ',' + self._to_32bit_hex(arguments[1])
 
         data = "%s%s#" % (command, arguments)
 
         self.transport.write(data)
-        return self.transport.read()
+        return self.transport.read(read_length)
 
 
     def run_from_address(self, address):
@@ -50,9 +57,11 @@ class SAMBA(object):
         return self._execute(SAMBACommands.GET_VERSION).strip()
 
 
-    def write_word(self, address, value):
-        self._execute(SAMBACommands.WRITE_WORD, [address, value])
+    def write_word(self, address, word):
+        word = struct.pack("<I", word)
+        self._execute(SAMBACommands.WRITE_WORD, arguments=[address, word])
 
 
     def read_word(self, address):
-        return self._execute(SAMBACommands.READ_WORD, [address, value])
+        word = self._execute(SAMBACommands.READ_WORD, arguments=[address], read_length=4)
+        return struct.unpack("<I", word)[0]

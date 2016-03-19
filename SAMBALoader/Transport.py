@@ -39,9 +39,29 @@ class SerialTransport(Transport):
         self.serialport.close()
 
 
-    def read(self):
-        data = self.serialport.readline()
-        self.serialport.read(1)
+    def _readline(self):
+        eol    = b'\n\r'
+        leneol = len(eol)
+        line   = bytearray()
+
+        while True:
+            c = self.serialport.read(1)
+
+            if c:
+                line += c
+                if line[-leneol:] == eol:
+                    break
+            else:
+                break
+
+        return bytes(line)
+
+
+    def read(self, length=None):
+        if length is None:
+            data = self._readline()
+        else:
+            data = self.serialport.read(length)
 
         if self.log_to_console:
             print '< ' + data

@@ -11,13 +11,27 @@
 # Released under a MIT license, see LICENCE.txt.
 
 import SAMBALoader
+import sys
 
 
-if __name__=="__main__":
-    transport = SAMBALoader.SerialTransport(port='COM3', log_to_console=True)
+if __name__ == "__main__":
+    transport = SAMBALoader.SerialTransport(port='COM3', log_to_console=False)
 
-    samba = SAMBALoader.SAMBA(transport)
+    samba    = SAMBALoader.SAMBA(transport)
+    parts    = SAMBALoader.PartLibrary
+    chip_ids = parts.get_chip_identifiers(samba)
+    part     = parts.find_by_chip_id(chip_ids.values())
 
-    print "SAMBA Version: %s" % samba.get_version()
+    print 'SAMBA Version: %s' % samba.get_version()
+    print ''.join('%s Identifiers: %s' % (k, v) for k, v in chip_ids.items())
 
-    print samba.read_word()
+    if part is None:
+        print 'Error: Unknown part.'
+        sys.exit(1)
+    elif len(part) > 1:
+        print 'Error: Multiple matching parts: %s' % [p.get_name for p in part]
+        sys.exit(1)
+    else:
+        part = part[0]
+
+    print 'Discovered Part: %s' % part.get_name()
