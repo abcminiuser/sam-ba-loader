@@ -8,4 +8,5 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
+from CHIPID import *
 from DSU import *

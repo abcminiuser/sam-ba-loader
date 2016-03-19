@@ -18,10 +18,14 @@ class PartLibrary(object):
 
 
     @staticmethod
-    def get_chip_identifiers(samba):
+    def get_chip_ids(samba):
         identifiers = dict()
 
-        identifiers['DSU'] = ChipIdentifiers.DSU(base_address=0x41002000).read(samba)
+        identifiers['CHIPID'] = ChipIdentifiers.CHIPID(base_address=0x400E0940)
+        identifiers['DSU']    = ChipIdentifiers.DSU(base_address=0x41002000)
+
+        for i in identifiers.itervalues():
+            i.read(samba)
 
         return identifiers
 
@@ -32,5 +36,5 @@ class PartLibrary(object):
 
 
     @staticmethod
-    def find_by_chip_id(chip_ids):
-        return [p for p in PartLibrary.SUPPORTED_PARTS for i in chip_ids if p.identify(i)]
+    def find_by_chip_ids(chip_ids):
+        return [p for p in PartLibrary.SUPPORTED_PARTS for id_name, id_values in chip_ids.items() if p.identify(id_name, id_values)]

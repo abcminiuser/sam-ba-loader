@@ -21,8 +21,12 @@ class ATSAMD20J18A(Part.SAMBAPart):
         return "ATSAMD20J18A"
 
 
-    def identify(self, chip_info):
-        return chip_info.processor == 1 and chip_info.family == 0 and chip_info.series == 0 and chip_info.variant == 0
+    def identify(self, id_name, id_values):
+        return id_name == "DSU" and id_values.processor == 1 and id_values.family == 0 and id_values.series == 0 and id_values.variant == 0
+
+
+    def run_application(self, samba):
+        samba.run_from_address(0x00000000)
 
 
     def erase_chip(self, samba):

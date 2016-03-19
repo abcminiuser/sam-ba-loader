@@ -12,26 +12,6 @@
 class DSU(object):
     CHIP_ID_OFFSET = 0x0018
 
-
-    def __init__(self, base_address):
-        self.base_address = base_address
-
-
-    def read(self, samba):
-        chip_id = samba.read_word(self.base_address + self.CHIP_ID_OFFSET)
-
-        processor = (chip_id >> 28) & 0x000F
-        family    = (chip_id >> 23) & 0x001F
-        series    = (chip_id >> 16) & 0x003F
-        die       = (chip_id >> 12) & 0x000F
-        revision  = (chip_id >>  8) & 0x000F
-        variant   = (chip_id >>  0) & 0x00FF
-
-        return DSUIdentifier(processor, family, series, die, revision, variant)
-
-
-
-class DSUIdentifier(object):
     PROCESSOR = {
         1 : "CORTEX M0+"
     }
@@ -43,8 +23,8 @@ class DSUIdentifier(object):
     }
 
 
-    def _lookup(self, table, value):
-        return table[value] if value in table else '?'
+    def __init__(self, base_address):
+        self.base_address = base_address
 
 
     def __str__(self):
@@ -58,10 +38,16 @@ class DSUIdentifier(object):
         return info
 
 
-    def __init__(self, processor, family, series, die, revision, variant):
-        self.processor = processor
-        self.family    = family
-        self.series    = series
-        self.die       = die
-        self.revision  = revision
-        self.variant   = variant
+    def _lookup(self, table, value):
+        return table[value] if value in table else '%d (Unknown)' % value
+
+
+    def read(self, samba):
+        self.chip_id = samba.read_word(self.base_address + self.CHIP_ID_OFFSET)
+
+        self.processor = (self.chip_id >> 28) & 0x000F
+        self.family    = (self.chip_id >> 23) & 0x001F
+        self.series    = (self.chip_id >> 16) & 0x003F
+        self.die       = (self.chip_id >> 12) & 0x000F
+        self.revision  = (self.chip_id >>  8) & 0x000F
+        self.variant   = (self.chip_id >>  0) & 0x00FF

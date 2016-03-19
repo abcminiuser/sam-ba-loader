@@ -19,11 +19,11 @@ if __name__ == "__main__":
 
     samba    = SAMBALoader.SAMBA(transport)
     parts    = SAMBALoader.PartLibrary
-    chip_ids = parts.get_chip_identifiers(samba)
-    part     = parts.find_by_chip_id(chip_ids.values())
+    chip_ids = parts.get_chip_ids(samba)
+    part     = parts.find_by_chip_ids(chip_ids)
 
     print 'SAMBA Version: %s' % samba.get_version()
-    print ''.join('%s Identifiers: %s' % (k, v) for k, v in chip_ids.items())
+    print '\n'.join('%s Identifiers: %s' % (k, v) for k, v in chip_ids.items())
 
     if part is None:
         print 'Error: Unknown part.'
@@ -37,5 +37,4 @@ if __name__ == "__main__":
     print 'Discovered Part: %s' % part.get_name()
 
 
-    print 'Erasing Chip...'
-    part.erase_chip(samba)
+    part.run_application(samba)

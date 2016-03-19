@@ -54,7 +54,7 @@ class SAMBA(object):
 
 
     def run_from_address(self, address):
-        self._execute(SAMBACommands.GO, [address])
+        self._execute(SAMBACommands.GO, arguments=[address])
 
 
     def get_version(self):
