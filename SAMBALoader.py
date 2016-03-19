@@ -15,7 +15,7 @@ import sys
 
 
 if __name__ == "__main__":
-    transport = SAMBALoader.SerialTransport(port='COM3', log_to_console=False)
+    transport = SAMBALoader.Transports.Serial(port='COM3', log_to_console=False)
 
     samba    = SAMBALoader.SAMBA(transport)
     parts    = SAMBALoader.PartLibrary
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         print 'Error: Unknown part.'
         sys.exit(1)
     elif len(part) > 1:
-        print 'Error: Multiple matching parts: %s' % [p.get_name for p in part]
+        print 'Error: Multiple matching parts: %s' % [p.get_name() for p in part]
         sys.exit(1)
     else:
         part = part[0]

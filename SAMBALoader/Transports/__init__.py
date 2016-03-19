@@ -8,9 +8,5 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-from SAMBA import *
-from PartLibrary import *
-from Transports import *
-from Parts import *
-from ChipIdentifiers import *
-from FlashControllers import *
+from Transport import *
+from Serial import *

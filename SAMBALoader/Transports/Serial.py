@@ -8,26 +8,11 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import abc
-
-
-"""Base class for SAM-BA transports. Derived instances should override all methods."""
-class Transport(object):
-    __metaclass__ = abc.ABCMeta
-
-
-    @abc.abstractmethod
-    def read(self):
-        pass
-
-
-    @abc.abstractmethod
-    def write(self, data):
-        pass
+import Transport
 
 
 """Serial transport for SAM-BA devices using a COM port."""
-class SerialTransport(Transport):
+class Serial(Transport.Transport):
     def __init__(self, port, baud=115200, log_to_console=False):
         import serial
 
@@ -75,4 +60,3 @@ class SerialTransport(Transport):
 
         self.serialport.write(data)
         self.serialport.write('\n')
-
