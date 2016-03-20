@@ -54,3 +54,8 @@ class SAMBAPart(object):
     @abc.abstractmethod
     def verify_flash(self, samba, data, address=None):
         pass
+
+
+    @abc.abstractmethod
+    def read_flash(self, samba, address=None, length=None):
+        pass

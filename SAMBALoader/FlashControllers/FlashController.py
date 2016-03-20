@@ -28,3 +28,8 @@ class FlashController(object):
     @abc.abstractmethod
     def verify_flash(self, samba, address, data):
         pass
+
+
+    @abc.abstractmethod
+    def read_flash(self, samba, address, length=None):
+        pass

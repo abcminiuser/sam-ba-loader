@@ -47,6 +47,13 @@ class ATSAMD20(Part.SAMBAPart):
         return self.FLASH_CONTROLLER.verify_flash(samba, address, data)
 
 
+    def read_flash(self, samba, address=None, length=None):
+        if address is None:
+            address = self.FLASH_APP_ADDRESS
+
+        return self.FLASH_CONTROLLER.read_flash(samba, address, length=length)
+
+
     def identify(self, id_name, id_values):
         return False
 

@@ -114,3 +114,22 @@ class NVMCTRL(FlashController.FlashController):
                 return (address + offset, actual_word, word)
 
         return None
+
+
+    def read_flash(self, samba, address, length=None):
+        self._get_nvm_params(samba)
+
+        if length is None:
+            length = (self.pages * self.page_size) - address
+
+        data = []
+
+        for offset in xrange(0, length, 4):
+            word = samba.read_word(address + offset)
+
+            data.append(word >> 0  & 0xFF)
+            data.append(word >> 8  & 0xFF)
+            data.append(word >> 16 & 0xFF)
+            data.append(word >> 24 & 0xFF)
+
+        return data
