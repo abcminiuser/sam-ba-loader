@@ -8,94 +8,69 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import abc
+import Part
+from .. import FlashControllers
 
 
-class SAMBAPart(object):
-    """Base class for supported SAM-BA devices. Derived instances should
-       override all methods listed here.
-    """
+class CortexM0p(Part.SAMBAPart):
+    """Common part implementation for the Cortex M0+ family devices."""
 
-    __metaclass__ = abc.ABCMeta
+    FLASH_CONTROLLER   = FlashControllers.NVMCTRL(base_address=0x41004000)
 
-
-    PART_UNTESTED = False
-
-
-    class __metaclass__(type):
-        """Metaclass instantiation, which tracks all classes which extend this
-           base class. This is used to automatically inject all objects which
-           derive from this interface into the part library, so that they are
-           automatically supported.
-        """
-        __inheritors__ = []
-
-        def __new__(meta, name, bases, dct):
-            klass = type.__new__(meta, name, bases, dct)
-            for base in klass.mro()[1:-1]:
-                if not klass in meta.__inheritors__:
-                    meta.__inheritors__.append(klass)
-            return klass
+    BOOTLOADER_SIZE    = 2048
+    FLASH_BASE_ADDRESS = 0x00000000
+    FLASH_APP_ADDRESS  = FLASH_BASE_ADDRESS + BOOTLOADER_SIZE
 
 
-    def is_tested(self):
-        """Determines if the current part has been tested (if not, a warning
-           message should be displayed).
-
-           Returns:
-               `True` if the part has been physically verified as working,
-               `False` otherwise.
-        """
-        return not self.PART_UNTESTED
-
-
-    @abc.abstractmethod
     def get_name(self):
-        """Device name, as a short string that can be displayed to the user or
-           matched against a requested device name.
+        """Retrieves the part name as a string. This extracts out the actual
+           class name of the sub-classed parts, on the assumption that all
+           subclasses of this class will be a specific SAM part (e.g.
+           SAMD20J18A).
 
            Returns:
-               Name of the device, as a string.
+               Name of the SAM part, as a string.
         """
-        pass
+        return self.__class__.__name__
 
 
-    @abc.abstractmethod
     def identify(self, id_name, id_values):
         """Determines if a device matches the given ID values that have been
-           extracted from the part via a `ChipIdentifier` module.
+           extracted from the part via a `ChipIdentifier` module. This is a
+           common family implementation intended to be sub-classes per-device,
+           thus this always returns a failed match.
 
            Args:
               id_name   : Name of the chip identifier being tested.
               id_values : Chip identifier values extracted from the part.
 
            Returns:
-               `True` if the part matches the given identifier.
+               `False`.
         """
-        pass
+        return False
 
 
-    @abc.abstractmethod
     def run_application(self, samba):
         """Runs the application from the start of the device's application area.
 
            Args:
               samba : Core `SAMBA` instance bound to the device.
         """
-        pass
+        samba.run_from_address(self.FLASH_APP_ADDRESS)
 
 
-    @abc.abstractmethod
     def erase_chip(self, samba):
-        """Erases the device's application area.
+        """Erases the device's application area. As these SAM devices do not
+           contain a ROM based SAM-BA bootloader, this is massaged into a range
+           erase of the flash from the end of the bootloader area to the end of
+           the flash.
 
            Args:
               samba : Core `SAMBA` instance bound to the device.
         """
-        pass
+        self.FLASH_CONTROLLER.erase_flash(samba, start_address=self.FLASH_APP_ADDRESS)
 
 
-    @abc.abstractmethod
     def program_flash(self, samba, data, address=None):
         """Program's the device's application area.
 
@@ -105,10 +80,13 @@ class SAMBAPart(object):
               address : Address to program from (or start of application area
                         if `None`).
         """
-        pass
+
+        if address is None:
+            address = self.FLASH_APP_ADDRESS
+
+        self.FLASH_CONTROLLER.program_flash(samba, address, data)
 
 
-    @abc.abstractmethod
     def verify_flash(self, samba, data, address=None):
         """Verifies the device's application area against a reference data set.
 
@@ -123,10 +101,13 @@ class SAMBAPart(object):
                specified offset, or a `(address, actual, expected)` tuple of the
                first mismatch.
         """
-        pass
+
+        if address is None:
+            address = self.FLASH_APP_ADDRESS
+
+        return self.FLASH_CONTROLLER.verify_flash(samba, address, data)
 
 
-    @abc.abstractmethod
     def read_flash(self, samba, address=None, length=None):
         """Reads the device's application area.
 
@@ -140,11 +121,8 @@ class SAMBAPart(object):
            Returns:
                Byte array of the extracted data.
         """
-        pass
 
+        if address is None:
+            address = self.FLASH_APP_ADDRESS
 
-def UntestedPart(part):
-    """Decorator applied to parts who have not yet been physically tested to
-       ensure they work as expected.
-    """
-    part.PART_UNTESTED = True
+        return self.FLASH_CONTROLLER.read_flash(samba, address, length=length)

@@ -9,4 +9,5 @@
 # Released under a MIT license, see LICENCE.txt.
 
 from Part import *
+from SAMUltra import *
 from SAMD20 import *
