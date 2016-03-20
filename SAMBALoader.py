@@ -15,7 +15,7 @@ import sys
 
 
 if __name__ == "__main__":
-    transport = SAMBALoader.Transports.Serial(port='COM3', log_to_console=True)
+    transport = SAMBALoader.Transports.Serial(port='COM3', log_to_console=False)
 
     try:
         samba    = SAMBALoader.SAMBA(transport)
@@ -38,8 +38,10 @@ if __name__ == "__main__":
         print 'Discovered Part: %s' % part.get_name()
 
         with open('LED_TOGGLE_D20_XPRO.bin', 'rb') as f:
-            pass
-            part.program_flash(samba, data=[ord(b) for b in f.read()])
+            bin_data = [ord(b) for b in f.read()]
+
+            print "Programming flash..."
+            part.program_flash(samba, data=bin_data)
 
         part.run_application(samba)
     except SAMBALoader.SerialTimeoutError:

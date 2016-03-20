@@ -26,9 +26,8 @@ class SAMBAPart(object):
             return klass
 
 
-    @staticmethod
     @abc.abstractmethod
-    def get_name():
+    def get_name(self):
         pass
 
 
@@ -46,6 +45,12 @@ class SAMBAPart(object):
     def erase_chip(self, samba):
         pass
 
+
     @abc.abstractmethod
     def program_flash(self, samba, data, address=None):
+        pass
+
+
+    @abc.abstractmethod
+    def verify_flash(self, samba, data, address=None):
         pass
