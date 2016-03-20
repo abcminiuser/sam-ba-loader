@@ -22,8 +22,9 @@ class NVMCTRL(FlashController.FlashController):
     INTFLAG_ERROR    = (1 << 1)
 
     CMDA_COMMANDS    = {
-        "ER" : 0x02,
-        "WP" : 0x04,
+        "ER"  : 0x02,
+        "WP"  : 0x04,
+        "PBC" : 0x44
     }
 
     PAGES_PER_ROW    = 4
@@ -43,6 +44,12 @@ class NVMCTRL(FlashController.FlashController):
     def _wait_while_busy(self, samba):
         while not samba.read_half_word(self.base_address + self.INTFLAG_OFFSET) & self.INTFLAG_READY:
             pass
+
+
+    def _clear_page_buffer(self, samba):
+        self._wait_while_busy(samba)
+
+        self._command(samba, self.CMDA_COMMANDS['PBC'])
 
 
     def _command(self, samba, command):
@@ -65,10 +72,20 @@ class NVMCTRL(FlashController.FlashController):
     def program_flash(self, samba, address, data):
         self._get_nvm_params(samba)
 
-        for (offset, word) in zip(xrange(len(data)), data):
+        self._clear_page_buffer(samba)
+        self._wait_while_busy(samba)
+
+        for offset in xrange(0, len(data), 4):
+            word  = data[offset + 0]
+            word |= data[offset + 1] << 8
+            word |= data[offset + 2] << 16
+            word |= data[offset + 3] << 24
             samba.write_word(address + offset, word)
 
             if offset and offset % self.page_size == 0:
-                self._command(samba, self.CMDA_COMMANDS['WP'])
+                self._wait_while_busy(samba)
+
+        if len(data) % 4 != 0:
+              self._command(samba, self.CMDA_COMMANDS['WP'])
 
         self._wait_while_busy(samba)

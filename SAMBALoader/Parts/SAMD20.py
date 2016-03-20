@@ -16,7 +16,7 @@ class ATSAMD20J18A(Part.SAMBAPart):
     FLASH_CONTROLLER   = FlashControllers.NVMCTRL(base_address=0x41004000)
 
     FLASH_BASE_ADDRESS = 0x00000000
-    BOOTLOADER_SIZE    = 0x40000
+    BOOTLOADER_SIZE    = 2048
 
 
     @staticmethod

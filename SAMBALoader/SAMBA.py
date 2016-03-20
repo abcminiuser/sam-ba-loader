@@ -33,10 +33,10 @@ class SAMBA(object):
 
 
     def _to_32bit_hex(self, value):
-        if not isinstance(value, str):
-            value = "%08x" % value
-
-        return value
+        if isinstance(value, str):
+            return value
+        else:
+            return "%08x" % value
 
 
     def _execute(self, command, arguments=None, read_length=None):
@@ -44,8 +44,10 @@ class SAMBA(object):
             arguments = ''
         elif len(arguments) is 1:
             arguments = self._to_32bit_hex(arguments[0]) + ','
-        else:
+        elif len(arguments) is 2:
             arguments = self._to_32bit_hex(arguments[0]) + ',' + self._to_32bit_hex(arguments[1])
+        else:
+            raise AssertionError("Invalid SAMBA command argument count: %d" % len(arguments))
 
         data = "%s%s#" % (command, arguments)
 
@@ -62,7 +64,7 @@ class SAMBA(object):
 
 
     def write_word(self, address, word):
-        self._execute(SAMBACommands.WRITE_WORD, arguments=[address, word])
+        self._execute(SAMBACommands.WRITE_WORD, arguments=[address, word], read_length=0)
 
 
     def read_word(self, address):
@@ -71,7 +73,7 @@ class SAMBA(object):
 
 
     def write_half_word(self, address, half_word):
-        self._execute(SAMBACommands.WRITE_HALF_WORD, arguments=[address, half_word])
+        self._execute(SAMBACommands.WRITE_HALF_WORD, arguments=[address, half_word], read_length=0)
 
 
     def read_half_word(self, address):
@@ -80,7 +82,7 @@ class SAMBA(object):
 
 
     def write_byte(self, address, byte):
-        self._execute(SAMBACommands.WRITE_BYTE, arguments=[address, byte])
+        self._execute(SAMBACommands.WRITE_BYTE, arguments=[address, byte], read_length=0)
 
 
     def read_byte(self, address):
