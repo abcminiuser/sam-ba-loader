@@ -15,7 +15,7 @@ import sys
 
 
 if __name__ == "__main__":
-    transport = SAMBALoader.Transports.Serial(port='COM3', log_to_console=False)
+    transport = SAMBALoader.Transports.Serial(port='COM3', log_to_console=True)
 
     samba    = SAMBALoader.SAMBA(transport)
     parts    = SAMBALoader.PartLibrary
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     print 'SAMBA Version: %s' % samba.get_version()
     print '\n'.join('%s Identifiers: %s' % (k, v) for k, v in chip_ids.items())
 
-    if part is None:
+    if len(part) == 0:
         print 'Error: Unknown part.'
         sys.exit(1)
     elif len(part) > 1:
@@ -36,5 +36,7 @@ if __name__ == "__main__":
 
     print 'Discovered Part: %s' % part.get_name()
 
+#    data = [x for x in xrange(1000)]
+#    part.program_flash(samba, data=data)
 
-    part.run_application(samba)
+#    part.run_application(samba)

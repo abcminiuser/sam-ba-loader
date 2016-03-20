@@ -18,3 +18,7 @@ class FlashController(object):
     @abc.abstractmethod
     def erase_chip(self, samba):
         pass
+
+    @abc.abstractmethod
+    def program_flash(self, samba, address, data):
+        pass

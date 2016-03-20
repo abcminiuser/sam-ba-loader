@@ -46,3 +46,6 @@ class SAMBAPart(object):
     def erase_chip(self, samba):
         pass
 
+    @abc.abstractmethod
+    def program_flash(self, samba, data, address=None):
+        pass

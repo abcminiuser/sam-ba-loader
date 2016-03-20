@@ -60,3 +60,15 @@ class NVMCTRL(FlashController.FlashController):
             self._command(samba, self.CMDA_COMMANDS['ER'])
 
         self._wait_while_busy(samba)
+
+
+    def program_flash(self, samba, address, data):
+        self._get_nvm_params(samba)
+
+        for (offset, word) in zip(xrange(len(data)), data):
+            samba.write_word(address + offset, word)
+
+            if offset and offset % self.page_size == 0:
+                self._command(samba, self.CMDA_COMMANDS['WP'])
+
+        self._wait_while_busy(samba)
