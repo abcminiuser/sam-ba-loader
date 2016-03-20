@@ -29,7 +29,7 @@ class SAMBA(object):
     def __init__(self, transport):
         self.transport = transport
 
-        self._execute(SAMBACommands.SET_NORMAL_MODE)
+        self._execute(SAMBACommands.SET_NORMAL_MODE, read_length=2)
 
 
     def _to_32bit_hex(self, value):
@@ -56,7 +56,7 @@ class SAMBA(object):
 
 
     def run_from_address(self, address):
-        self._execute(SAMBACommands.GO, arguments=[address])
+        self._execute(SAMBACommands.GO, arguments=[address], read_length=0)
 
 
     def get_version(self):

@@ -50,6 +50,7 @@ class NVMCTRL(FlashController.FlashController):
         self._wait_while_busy(samba)
 
         self._command(samba, self.CMDA_COMMANDS['PBC'])
+        self._wait_while_busy(samba)
 
 
     def _command(self, samba, command):
@@ -59,21 +60,31 @@ class NVMCTRL(FlashController.FlashController):
         samba.write_half_word(self.base_address + self.CMDA_OFFSET, reg)
 
 
-    def erase_chip(self, samba):
+    def erase_flash(self, samba, start_address=None, end_address=None):
         self._get_nvm_params(samba)
 
-        for p in xrange(0, self.pages, self.PAGES_PER_ROW):
-            samba.write_word(self.base_address + self.ADDRESS_OFFSET, p)
-            self._command(samba, self.CMDA_COMMANDS['ER'])
+        if start_address is None:
+            start_address = 0
 
-        self._wait_while_busy(samba)
+        if end_address is None:
+            end_address = self.pages * self.page_size
+
+        start_address -= start_address % (self.PAGES_PER_ROW * self.page_size)
+        end_address   -= end_address   % (self.PAGES_PER_ROW * self.page_size)
+
+        self._clear_page_buffer(samba)
+
+        for offset in xrange(start_address, end_address, self.PAGES_PER_ROW * self.page_size):
+            samba.write_word(self.base_address + self.ADDRESS_OFFSET, offset >> 1)
+
+            self._command(samba, self.CMDA_COMMANDS['ER'])
+            self._wait_while_busy(samba)
 
 
     def program_flash(self, samba, address, data):
         self._get_nvm_params(samba)
 
         self._clear_page_buffer(samba)
-        self._wait_while_busy(samba)
 
         for offset in xrange(0, len(data), 4):
             word  = data[offset + 0]

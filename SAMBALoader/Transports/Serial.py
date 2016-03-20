@@ -11,6 +11,11 @@
 import Transport
 
 
+"""Exception thrown when the serial transport times out while waiting for more data."""
+class SerialTimeoutError(Exception):
+    pass
+
+
 """Serial transport for SAM-BA devices using a COM port."""
 class Serial(Transport.Transport):
     def __init__(self, port, baud=115200, log_to_console=False):
@@ -37,16 +42,25 @@ class Serial(Transport.Transport):
                 if line[-leneol:] == eol:
                     break
             else:
-                break
+                raise SerialTimeoutError()
 
         return bytes(line)
+
+
+    def _read(self, length):
+        data = self.serialport.read(length)
+
+        if len(data) != length:
+            raise SerialTimeoutError()
+
+        return bytes(data)
 
 
     def read(self, length=None):
         if length is None:
             data = self._readline()
         else:
-            data = self.serialport.read(length)
+            data = self._read(length)
 
         if self.log_to_console:
             print '< ' + data

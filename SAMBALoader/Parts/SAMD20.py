@@ -15,8 +15,10 @@ from .. import FlashControllers
 class ATSAMD20J18A(Part.SAMBAPart):
     FLASH_CONTROLLER   = FlashControllers.NVMCTRL(base_address=0x41004000)
 
-    FLASH_BASE_ADDRESS = 0x00000000
     BOOTLOADER_SIZE    = 2048
+
+    FLASH_BASE_ADDRESS = 0x00000000
+    FLASH_APP_ADDRESS  = FLASH_BASE_ADDRESS + BOOTLOADER_SIZE
 
 
     @staticmethod
@@ -29,15 +31,15 @@ class ATSAMD20J18A(Part.SAMBAPart):
 
 
     def run_application(self, samba):
-        samba.run_from_address(self.FLASH_BASE_ADDRESS + self.BOOTLOADER_SIZE)
+        samba.run_from_address(self.FLASH_APP_ADDRESS)
 
 
     def erase_chip(self, samba):
-        self.FLASH_CONTROLLER.erase_chip(samba)
+        self.FLASH_CONTROLLER.erase_flash(samba, start_address=self.FLASH_APP_ADDRESS)
 
 
     def program_flash(self, samba, data, address=None):
         if address is None:
-            address = self.FLASH_BASE_ADDRESS + self.BOOTLOADER_SIZE
+            address = self.FLASH_APP_ADDRESS
 
         self.FLASH_CONTROLLER.program_flash(samba, address, data)

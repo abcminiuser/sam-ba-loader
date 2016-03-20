@@ -15,29 +15,33 @@ import sys
 
 
 if __name__ == "__main__":
-    transport = SAMBALoader.Transports.Serial(port='COM3', log_to_console=False)
+    transport = SAMBALoader.Transports.Serial(port='COM3', log_to_console=True)
 
-    samba    = SAMBALoader.SAMBA(transport)
-    parts    = SAMBALoader.PartLibrary
-    chip_ids = parts.get_chip_ids(samba)
-    part     = parts.find_by_chip_ids(chip_ids)
+    try:
+        samba    = SAMBALoader.SAMBA(transport)
+        parts    = SAMBALoader.PartLibrary
+        chip_ids = parts.get_chip_ids(samba)
+        part     = parts.find_by_chip_ids(chip_ids)
 
-    print 'SAMBA Version: %s' % samba.get_version()
-    print '\n'.join('%s Identifiers: %s' % (k, v) for k, v in chip_ids.items())
+        print 'SAMBA Version: %s' % samba.get_version()
+        print '\n'.join('%s Identifiers: %s' % (k, v) for k, v in chip_ids.items())
 
-    if len(part) == 0:
-        print 'Error: Unknown part.'
+        if len(part) == 0:
+            print 'Error: Unknown part.'
+            sys.exit(1)
+        elif len(part) > 1:
+            print 'Error: Multiple matching parts: %s' % [p.get_name() for p in part]
+            sys.exit(1)
+        else:
+            part = part[0]
+
+        print 'Discovered Part: %s' % part.get_name()
+
+        with open('LED_TOGGLE_D20_XPRO.bin', 'rb') as f:
+            pass
+            part.program_flash(samba, data=[ord(b) for b in f.read()])
+
+        part.run_application(samba)
+    except SAMBALoader.SerialTimeoutError:
+        print "ERROR: Serial timeout while waiting for data."
         sys.exit(1)
-    elif len(part) > 1:
-        print 'Error: Multiple matching parts: %s' % [p.get_name() for p in part]
-        sys.exit(1)
-    else:
-        part = part[0]
-
-    print 'Discovered Part: %s' % part.get_name()
-
-    with open('LED_TOGGLE_D20_XPRO.bin', 'rb') as f:
-        pass
-        part.program_flash(samba, data=[ord(b) for b in f.read()])
-
-    part.run_application(samba)
