@@ -43,6 +43,12 @@ if __name__ == "__main__":
             print "Programming flash..."
             part.program_flash(samba, data=bin_data)
 
+            print "Verifying flash..."
+            verify_failure = part.verify_flash(samba, data=bin_data)
+            if not verify_failure is None:
+                print "ERROR: Verification failure @ 0x%08x: 0x%08x != 0x%08x" % verify_failure
+                sys.exit(1)
+
         part.run_application(samba)
     except SAMBALoader.SerialTimeoutError:
         print "ERROR: Serial timeout while waiting for data."

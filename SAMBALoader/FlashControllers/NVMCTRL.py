@@ -96,7 +96,21 @@ class NVMCTRL(FlashController.FlashController):
             if offset and offset % self.page_size == 0:
                 self._wait_while_busy(samba)
 
-        if len(data) % 4 != 0:
-              self._command(samba, self.CMDA_COMMANDS['WP'])
+        if (address + len(data)) % self.page_size != 0:
+            self._command(samba, self.CMDA_COMMANDS['WP'])
 
         self._wait_while_busy(samba)
+
+
+    def verify_flash(self, samba, address, data):
+        for offset in xrange(0, len(data), 4):
+            word  = data[offset + 0]
+            word |= data[offset + 1] << 8
+            word |= data[offset + 2] << 16
+            word |= data[offset + 3] << 24
+
+            actual_word = samba.read_word(address + offset)
+            if actual_word != word:
+                return (address + offset, actual_word, word)
+
+        return None

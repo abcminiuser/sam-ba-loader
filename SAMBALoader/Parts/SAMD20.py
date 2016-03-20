@@ -53,7 +53,6 @@ class ATSAMD20(Part.SAMBAPart):
 
 
 class ATSAMD20J18A(ATSAMD20):
-
     def identify(self, id_name, id_values):
         return id_name == "DSU" and id_values.processor == 1 and id_values.family == 0 and id_values.series == 0 and id_values.variant == 0
 

@@ -19,6 +19,12 @@ class FlashController(object):
     def erase_flash(self, samba, start_address=None, end_address=None):
         pass
 
+
     @abc.abstractmethod
     def program_flash(self, samba, address, data):
+        pass
+
+
+    @abc.abstractmethod
+    def verify_flash(self, samba, address, data):
         pass
