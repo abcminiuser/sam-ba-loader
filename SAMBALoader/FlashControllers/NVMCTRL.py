@@ -31,10 +31,25 @@ class NVMCTRL(FlashController.FlashController):
 
 
     def __init__(self, base_address):
+        """Initializes a NVMCTRL controller instance at the specified base
+           address in the attached device.
+
+           Args:
+               base_address : Base address of the NVMCTRL module within the
+                              internal address space of the attached device
+        """
+
         self.base_address = base_address
 
 
     def _get_nvm_params(self, samba):
+        """Retrieves the NVM parameters from the attached device, and caches
+           then in the class instance.
+
+           Args:
+              samba : Core `SAMBA` instance bound to the device.
+        """
+
         nvm_param = samba.read_word(self.base_address + self.PARAM_OFFSET)
 
         self.page_size = 8 << ((nvm_param >> 16) & 0x07)
@@ -42,37 +57,48 @@ class NVMCTRL(FlashController.FlashController):
 
 
     def _wait_while_busy(self, samba):
+        """Waits until the NVM controller in the attached device is ready for a
+           new operation.
+
+           Args:
+              samba : Core `SAMBA` instance bound to the device.
+        """
         while not samba.read_half_word(self.base_address + self.INTFLAG_OFFSET) & self.INTFLAG_READY:
             pass
 
 
-    def _clear_page_buffer(self, samba):
-        self._wait_while_busy(samba)
-
-        self._command(samba, self.CMDA_COMMANDS['PBC'])
-        self._wait_while_busy(samba)
-
-
     def _command(self, samba, command):
+        """Issues a low-level command to the NVMCTRL module within the
+            connected device.
+
+           Args:
+              samba   : Core `SAMBA` instance bound to the device.
+              command : Command value to issue (see `CMDA_COMMANDS`)
+        """
+
         self._wait_while_busy(samba)
 
         reg  = (0xA5 << 8) | command
         samba.write_half_word(self.base_address + self.CMDA_OFFSET, reg)
 
 
-    def erase_flash(self, samba, start_address=None, end_address=None):
-        self._get_nvm_params(samba)
+    def erase_flash(self, samba, start_address, end_address=None):
+        """Erases the device's application area in the specified region.
 
-        if start_address is None:
-            start_address = 0
+           Args:
+              samba         : Core `SAMBA` instance bound to the device.
+              start_address : Start address to erase.
+              end_address   : End address to erase (or end of application area
+                              if `None`).
+        """
+
+        self._get_nvm_params(samba)
 
         if end_address is None:
             end_address = self.pages * self.page_size
 
         start_address -= start_address % (self.PAGES_PER_ROW * self.page_size)
         end_address   -= end_address   % (self.PAGES_PER_ROW * self.page_size)
-
-        self._clear_page_buffer(samba)
 
         for offset in xrange(start_address, end_address, self.PAGES_PER_ROW * self.page_size):
             samba.write_word(self.base_address + self.ADDRESS_OFFSET, offset >> 1)
@@ -82,9 +108,18 @@ class NVMCTRL(FlashController.FlashController):
 
 
     def program_flash(self, samba, address, data):
+        """Program's the device's application area.
+
+           Args:
+              samba   : Core `SAMBA` instance bound to the device.
+              address : Address to program from.
+              data    : Data to program into the device.
+        """
+
         self._get_nvm_params(samba)
 
-        self._clear_page_buffer(samba)
+        self._command(samba, self.CMDA_COMMANDS['PBC'])
+        self._wait_while_busy(samba)
 
         for offset in xrange(0, len(data), 4):
             word  = data[offset + 0]
@@ -103,6 +138,19 @@ class NVMCTRL(FlashController.FlashController):
 
 
     def verify_flash(self, samba, address, data):
+        """Verifies the device's application area against a reference data set.
+
+           Args:
+              samba   : Core `SAMBA` instance bound to the device.
+              address : Address to verify from.
+              data    : Data to verify against.
+
+           Returns:
+               `None` if the given data matches the data in the device at the
+               specified offset, or a `(address, actual, expected)` tuple of the
+               first mismatch.
+        """
+
         for offset in xrange(0, len(data), 4):
             word  = data[offset + 0]
             word |= data[offset + 1] << 8
@@ -117,6 +165,18 @@ class NVMCTRL(FlashController.FlashController):
 
 
     def read_flash(self, samba, address, length=None):
+        """Reads the device's application area.
+
+           Args:
+              samba   : Core `SAMBA` instance bound to the device.
+              address : Address to read from.
+              length  : Length of the data to extract (or until end of
+                        application area if `None`).
+
+           Returns:
+               Byte array of the extracted data.
+        """
+
         self._get_nvm_params(samba)
 
         if length is None:

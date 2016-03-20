@@ -8,8 +8,15 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
+import ChipIdentifier
 
-class DSU(object):
+
+class DSU(ChipIdentifier.ChipIdentifier):
+    """DSU chip identifier module, used to read out the chip identification
+       registers of a SAM device that contains a DSU module, and extract out the
+       various fields for later comparison against reference part values.
+    """
+
     CHIP_ID_OFFSET = 0x0018
 
     PROCESSOR = {
@@ -24,10 +31,26 @@ class DSU(object):
 
 
     def __init__(self, base_address):
+        """Initializes a DSU chip identifier instance at the specified base
+           address in the attached device.
+
+           Args:
+               base_address : Base address of the DSU module within the internal
+                              address space of the attached device.
+        """
+
         self.base_address = base_address
 
 
     def __str__(self):
+        """Conversion method to serialize the parsed chip identifier values out
+           as a string.
+
+           Returns:
+               Chip identifier values as a human readable string suitable for
+               printing to a console.
+        """
+
         info  = "\n\tProcessor:\t" + self._lookup(self.PROCESSOR, self.processor)
         info += "\n\tFamily:\t\t" + self._lookup(self.FAMILY, self.family)
         info += "\n\tSeries:\t\t" + self._lookup(self.SERIES, self.series)
@@ -39,10 +62,31 @@ class DSU(object):
 
 
     def _lookup(self, table, value):
+        """Internal lookup helper function, searching a lookup table for the
+           specified value, or returning the raw value and an unknown identifier
+           warning.
+
+           Args:
+               table : Lookup table to examine.
+               value : Value to search for in the table.
+
+           Returns:
+               String matching the value in the table if found, or the raw value
+               (as a string) if not.
+        """
+
         return table[value] if value in table else '%d (Unknown)' % value
 
 
     def read(self, samba):
+        """Reads and parses the chip identification values from the attached
+           device. Parsed values are then stored in the class instance, and can
+           be extracted later for matching against a specific device.
+
+           Args:
+              samba : Core `SAMBA` instance bound to the device.
+        """
+
         self.chip_id = samba.read_word(self.base_address + self.CHIP_ID_OFFSET)
 
         self.processor = (self.chip_id >> 28) & 0x000F

@@ -11,16 +11,33 @@
 import abc
 
 
-"""Base class for SAM-BA transports. Derived instances should override all methods."""
 class Transport(object):
+    """Base class for SAM-BA transports. Derived instances should override all
+       methods listed here.
+    """
+
     __metaclass__ = abc.ABCMeta
 
 
     @abc.abstractmethod
-    def read(self):
+    def read(self, length=None):
+        """Reads a given number of bytes from the transport.
+
+            Args:
+                length : Number of bytes to read. If `None`, a full line will be
+                         read until a terminator is reached.
+
+            Returns:
+                Byte array of the received data.
+        """
         pass
 
 
     @abc.abstractmethod
     def write(self, data):
+        """Writes a given number of bytes to the transport.
+
+            Args:
+                data : Bytes to write.
+        """
         pass
