@@ -41,7 +41,7 @@ class SAMBA(object):
 
         self.transport = transport
 
-        self._execute(SAMBACommands.SET_NORMAL_MODE, read_length=2)
+        self._execute(SAMBACommands.SET_NORMAL_MODE)
 
 
     def _to_32bit_hex(self, value):

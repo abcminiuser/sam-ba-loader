@@ -52,6 +52,7 @@ class CHIPID(ChipIdentifier.ChipIdentifier):
     }
 
     PROCESSOR = {
+        0  : "Cortex-M7",
         1  : "ARM946ES",
         2  : "ARM7TDMI",
         3  : "Cortex-M3",
@@ -121,8 +122,8 @@ class CHIPID(ChipIdentifier.ChipIdentifier):
 
         self.chip_id = samba.read_word(self.base_address + self.CIDR_OFFSET)
 
-        self.version   = (self.chip_id >> 0)  & 0x00000F
-        self.processor = (self.chip_id >> 5)  & 0x000007
-        self.flash     = [(self.chip_id >> 8) & 0x00000F, (self.chip_id >> 12) & 0x00000F]
-        self.sram      = (self.chip_id >> 16) & 0x00000F
-        self.arch      = (self.chip_id >> 24) & 0x00000F
+        self.version      = (self.chip_id >> 0)  & 0x00000F
+        self.processor    = (self.chip_id >> 5)  & 0x000007
+        self.flash        = [(self.chip_id >> 8) & 0x00000F, (self.chip_id >> 12) & 0x00000F]
+        self.sram         = (self.chip_id >> 16) & 0x00000F
+        self.architecture = (self.chip_id >> 24) & 0x00000F

@@ -10,4 +10,5 @@
 
 from ChipIdentifier import *
 from CHIPID import *
+from CPUID import *
 from DSU import *

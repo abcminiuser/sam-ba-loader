@@ -37,11 +37,17 @@ class PartLibrary(object):
         """
         identifiers = dict()
 
-        identifiers['CHIPID'] = ChipIdentifiers.CHIPID(base_address=0x400E0940)
-        identifiers['DSU']    = ChipIdentifiers.DSU(base_address=0x41002000)
+        identifiers['CPUID'] = ChipIdentifiers.CPUID(base_address=0xE000ED00)
+        identifiers['CPUID'].read(samba)
 
-        for i in identifiers.itervalues():
-            i.read(samba)
+        if identifiers['CPUID'].part in identifiers['CPUID'].PART:
+            # Cortex-M0 devices have a DSU for additional information, others use a CHIPID
+            if "M0" in identifiers['CPUID'].PART[identifiers['CPUID'].part]:
+                identifiers['DSU'] = ChipIdentifiers.DSU(base_address=0x41002000)
+                identifiers['DSU'].read(samba)
+            else:
+                identifiers['CHIPID'] = ChipIdentifiers.CHIPID(base_address=0x400E0940)
+                identifiers['CHIPID'].read(samba)
 
         return identifiers
 
