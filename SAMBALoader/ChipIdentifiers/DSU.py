@@ -17,7 +17,7 @@ class DSU(ChipIdentifier.ChipIdentifier):
        various fields for later comparison against reference part values.
     """
 
-    CHIP_ID_OFFSET = 0x0018
+    DID_OFFSET = 0x0018
 
     PROCESSOR = {
         1 : "CORTEX M0+"
@@ -87,7 +87,7 @@ class DSU(ChipIdentifier.ChipIdentifier):
               samba : Core `SAMBA` instance bound to the device.
         """
 
-        self.chip_id = samba.read_word(self.base_address + self.CHIP_ID_OFFSET)
+        self.chip_id = samba.read_word(self.base_address + self.DID_OFFSET)
 
         self.processor = (self.chip_id >> 28) & 0x000F
         self.family    = (self.chip_id >> 23) & 0x001F

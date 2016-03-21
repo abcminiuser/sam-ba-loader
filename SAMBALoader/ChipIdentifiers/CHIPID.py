@@ -18,6 +18,7 @@ class CHIPID(ChipIdentifier.ChipIdentifier):
     """
 
     CIDR_OFFSET = 0x0000
+    EXID_OFFSET = 0x0004
 
     FLASH_BANK_SIZE = {
         0  : "NONE",
@@ -90,6 +91,7 @@ class CHIPID(ChipIdentifier.ChipIdentifier):
         info += "\n\tFlash Bank 0:\t" + self._lookup(self.FLASH_BANK_SIZE, self.flash[0])
         info += "\n\tFlash Bank 1:\t" + self._lookup(self.FLASH_BANK_SIZE, self.flash[1])
         info += "\n\tSRAM:\t\t" + self._lookup(self.SRAM_SIZE, self.sram)
+        info += "\n\tExtended ID:\t" + str(self.extended_chip_id)
 
         return info
 
@@ -121,6 +123,7 @@ class CHIPID(ChipIdentifier.ChipIdentifier):
         """
 
         self.chip_id = samba.read_word(self.base_address + self.CIDR_OFFSET)
+        self.extended_chip_id = samba.read_word(self.base_address + self.EXID_OFFSET)
 
         self.version      = (self.chip_id >> 0)  & 0x00000F
         self.processor    = (self.chip_id >> 5)  & 0x000007
