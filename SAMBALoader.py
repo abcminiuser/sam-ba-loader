@@ -36,6 +36,8 @@ if __name__ == "__main__":
             part = part[0]
 
         print 'Discovered Part: %s' % part.get_name()
+        if not part.is_tested():
+            print "Warning: selected part is currently untested."
 
         with open('LED_TOGGLE_D20_XPRO.bin', 'rb') as f:
             bin_data = [ord(b) for b in f.read()]
