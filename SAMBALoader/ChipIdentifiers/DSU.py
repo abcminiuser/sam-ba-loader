@@ -20,13 +20,20 @@ class DSU(ChipIdentifier.ChipIdentifier):
     DID_OFFSET = 0x0018
 
     PROCESSOR = {
-        1 : "CORTEX M0+"
+        0 : "CORTEX M0",
+        1 : "CORTEX M0+",
+        2 : "CORTEX M3",
+        3 : "CORTEX M4",
     }
     FAMILY = {
-        0 : "SAM D"
+        0 : "SAM D",
+        1 : "SAM L",
+        2 : "SAM C",
     }
     SERIES = {
-        0 : "CORTEX M0+ Basic Feature Set"
+        0  : "CORTEX M0+ Basic Feature Set",
+        1  : "Cortex M0+ CPU, Advanced Feature Set, DMA, USB",
+        2  : "Cortex M0+ CPU, DMA",
     }
 
 

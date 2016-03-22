@@ -10,4 +10,6 @@
 
 from Part import *
 from CortexM0p import *
-from SAMD20 import *
+from SAMC import *
+from SAMD import *
+from SAML import *

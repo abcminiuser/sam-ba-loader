@@ -13,9 +13,9 @@ Python 2.x should work, Python 3.x currently untested. Requires the popular `ser
 
 ## Status
 
-Currently the core is still in development, but it can read out the identification registers of CHIPID parts (SAM3, SAM4, SAMV, SAMS) and DSU parts (SAMD, SAMC, SAML).
+Currently the core is still in development, but it can read out the identification registers of CHIPID parts (SAM3, SAM4, SAM7) and DSU parts (SAMC, SAMD, SAML).
 
-The SAMD20 is currently supported for flash programming and verification. More devices will be added once the core APIs are stable.
+The SAM C, D and L series are currently supported for flash programming and verification. More devices will be added once the core APIs are stable.
 
 
 ## Use
