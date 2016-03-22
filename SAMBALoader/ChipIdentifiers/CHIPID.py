@@ -87,7 +87,7 @@ class CHIPID(ChipIdentifier.ChipIdentifier):
 
         info  = "\n\tVersion:\t" + str(self.version)
         info += "\n\tProcessor:\t" + self._lookup(self.PROCESSOR, self.processor)
-        info += "\n\tArchitecture:\t" + str(self.arch)
+        info += "\n\tArchitecture:\t" + str(self.architecture)
         info += "\n\tFlash Bank 0:\t" + self._lookup(self.FLASH_BANK_SIZE, self.flash[0])
         info += "\n\tFlash Bank 1:\t" + self._lookup(self.FLASH_BANK_SIZE, self.flash[1])
         info += "\n\tSRAM:\t\t" + self._lookup(self.SRAM_SIZE, self.sram)
