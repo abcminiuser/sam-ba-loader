@@ -10,7 +10,10 @@
 
 from SAMBA import *
 from PartLibrary import *
+from FileFormatLibrary import *
+
 from Transports import *
 from Parts import *
 from ChipIdentifiers import *
 from FlashControllers import *
+from FileFormats import *

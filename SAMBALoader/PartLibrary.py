@@ -18,7 +18,7 @@ class PartLibrary(object):
        methods to retrieve a given part by its chip identifiers, or by name.
     """
 
-    SUPPORTED_PARTS = [c() for c in Parts.SAMBAPart.__inheritors__]
+    SUPPORTED_PARTS = [c for c in Parts.PartBase.__inheritors__]
 
 
     @staticmethod

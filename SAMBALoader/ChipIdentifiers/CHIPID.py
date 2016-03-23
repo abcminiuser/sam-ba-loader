@@ -11,7 +11,7 @@
 import ChipIdentifier
 
 
-class CHIPID(ChipIdentifier.ChipIdentifier):
+class CHIPID(ChipIdentifier.ChipIdentifierBase):
     """CHIPID chip identifier module, used to read out the chip identification
        registers of a SAM device that contains a CHIPID module, and extract out
        the various fields for later comparison against reference part values.

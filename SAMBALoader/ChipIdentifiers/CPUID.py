@@ -11,7 +11,7 @@
 import ChipIdentifier
 
 
-class CPUID(ChipIdentifier.ChipIdentifier):
+class CPUID(ChipIdentifier.ChipIdentifierBase):
     """CPUID chip identifier module, used to read out the ARM core
        identification register from an unknown ARM device, and extract out the
        various fields for later comparison against reference part values.

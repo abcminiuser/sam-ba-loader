@@ -11,7 +11,7 @@
 import abc
 
 
-class SAMBAPart(object):
+class PartBase(object):
     """Base class for supported SAM-BA devices. Derived instances should
        override all methods listed here.
     """
@@ -60,8 +60,9 @@ class SAMBAPart(object):
         pass
 
 
+    @staticmethod
     @abc.abstractmethod
-    def identify(self, id_name, id_values):
+    def identify(id_name, id_values):
         """Determines if a device matches the given ID values that have been
            extracted from the part via a `ChipIdentifier` module.
 

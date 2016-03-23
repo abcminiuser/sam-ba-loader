@@ -11,7 +11,7 @@
 import abc
 
 
-class FlashController(object):
+class FlashControllerBase(object):
     """Base class for SAM Flash controllers. Derived instances should override
        all methods listed here.
     """

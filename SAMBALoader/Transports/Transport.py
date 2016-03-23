@@ -11,7 +11,7 @@
 import abc
 
 
-class Transport(object):
+class TransportBase(object):
     """Base class for SAM-BA transports. Derived instances should override all
        methods listed here.
     """

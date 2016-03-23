@@ -11,7 +11,7 @@
 import abc
 
 
-class ChipIdentifier(object):
+class ChipIdentifierBase(object):
     """Base class for SAM chip identification modules. Derived instances should
        override all methods listed here.
     """

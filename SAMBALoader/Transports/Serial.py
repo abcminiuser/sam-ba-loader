@@ -18,7 +18,7 @@ class SerialTimeoutError(Exception):
     pass
 
 
-class Serial(Transport.Transport):
+class Serial(Transport.TransportBase):
     """Serial transport for SAM-BA devices using a COM port."""
 
     def __init__(self, port, baud=115200, log_to_console=False):

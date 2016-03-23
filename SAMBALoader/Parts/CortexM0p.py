@@ -12,7 +12,7 @@ import Part
 from .. import FlashControllers
 
 
-class CortexM0p(Part.SAMBAPart):
+class CortexM0p(Part.PartBase):
     """Common part implementation for the Cortex M0+ family devices."""
 
     FLASH_CONTROLLER   = FlashControllers.NVMCTRL(base_address=0x41004000)
@@ -34,7 +34,8 @@ class CortexM0p(Part.SAMBAPart):
         return self.__class__.__name__
 
 
-    def identify(self, id_name, id_values):
+    @staticmethod
+    def identify(id_name, id_values):
         """Determines if a device matches the given ID values that have been
            extracted from the part via a `ChipIdentifier` module. This is a
            common family implementation intended to be sub-classes per-device,

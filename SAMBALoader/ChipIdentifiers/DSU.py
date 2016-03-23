@@ -11,7 +11,7 @@
 import ChipIdentifier
 
 
-class DSU(ChipIdentifier.ChipIdentifier):
+class DSU(ChipIdentifier.ChipIdentifierBase):
     """DSU chip identifier module, used to read out the chip identification
        registers of a SAM device that contains a DSU module, and extract out the
        various fields for later comparison against reference part values.

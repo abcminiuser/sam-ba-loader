@@ -33,23 +33,32 @@ if __name__ == "__main__":
             print 'Error: Multiple matching parts: %s' % [p.get_name() for p in part]
             sys.exit(1)
         else:
-            part = part[0]
+            part = part[0]()
 
         print 'Discovered Part: %s' % part.get_name()
         if not part.is_tested():
             print "Warning: selected part is currently untested."
 
-        with open('LED_TOGGLE_D20_XPRO.bin', 'rb') as f:
-            bin_data = [ord(b) for b in f.read()]
+        filename = 'LED_TOGGLE_D20_XPRO.bin'
+        file_format_processor = SAMBALoader.FileFormatLibrary.find_by_name(filename)
 
-            print "Programming flash..."
-            part.program_flash(samba, data=bin_data)
+        if len(file_format_processor) == 0:
+            print 'Error: No file format reader found.'
+        elif len(file_format_processor) > 1:
+            print 'Error: Multiple file format readers found.'
+        else:
+            file_format_processor = file_format_processor[0]()
 
-            print "Verifying flash..."
-            verify_failure = part.verify_flash(samba, data=bin_data)
-            if not verify_failure is None:
-                print "ERROR: Verification failure @ 0x%08x: 0x%08x != 0x%08x" % verify_failure
-                sys.exit(1)
+        bin_data = file_format_processor.read(filename)
+
+        print "Programming flash..."
+        part.program_flash(samba, data=bin_data)
+
+        print "Verifying flash..."
+        verify_failure = part.verify_flash(samba, data=bin_data)
+        if not verify_failure is None:
+            print "ERROR: Verification failure @ 0x%08x: 0x%08x != 0x%08x" % verify_failure
+            sys.exit(1)
 
         part.run_application(samba)
     except SAMBALoader.SerialTimeoutError:

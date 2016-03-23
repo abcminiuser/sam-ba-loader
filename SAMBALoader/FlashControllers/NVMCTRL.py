@@ -11,7 +11,7 @@
 import FlashController
 
 
-class NVMCTRL(FlashController.FlashController):
+class NVMCTRL(FlashController.FlashControllerBase):
     CMDA_OFFSET      = 0x0000
     PARAM_OFFSET     = 0x0008
     STATUS_OFFSET    = 0x0018
