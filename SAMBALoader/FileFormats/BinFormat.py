@@ -26,6 +26,10 @@ class BinFormat(FileFormat.FileFormatBase):
         return self.data[index]
 
 
+    def __len__(self):
+        return len(self.data)
+
+
     @staticmethod
     def can_process(filename):
         filename_components = filename.split('.')
@@ -35,6 +39,10 @@ class BinFormat(FileFormat.FileFormatBase):
         return filename.split('.')[-1] == "bin"
 
 
+    def get_name(self):
+        return "Binary"
+
+
     def read(self, filename):
         """Reads and parses the contents of a binary file from disk.
 
@@ -42,13 +50,13 @@ class BinFormat(FileFormat.FileFormatBase):
                filename : Filename of the binary file to read.
 
            Returns:
-               The parsed file data as a flat array.
+               Iterable of the processed data.
         """
 
         with open(filename, 'rb') as f:
             self.data = [ord(b) for b in f.read()]
 
-        return self.data
+        return self
 
 
     def write(self, filename):

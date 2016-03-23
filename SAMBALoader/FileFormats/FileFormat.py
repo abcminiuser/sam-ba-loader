@@ -35,10 +35,30 @@ class FileFormatBase(object):
             return klass
 
 
-
     @staticmethod
     @abc.abstractmethod
     def can_process(self, filename):
+        """Determines if the file format can process a given file, based on its
+           filename (usually, this is based on the file extension).
+
+           Args:
+               filename : Filename of the file to examine.
+
+           Returns:
+               `True`, if the format reader can parse the given file format.
+        """
+
+        pass
+
+
+    @abc.abstractmethod
+    def get_name(self):
+        """Format reader name, as a short string that can be displayed to the
+           user.
+
+           Returns:
+               Name of the format reader, as a string.
+        """
         pass
 
 
@@ -52,7 +72,7 @@ class FileFormatBase(object):
                filename : Filename of the file to read.
 
            Returns:
-               The parsed file data as a flat array.
+               Iterable of the processed data.
         """
 
         pass

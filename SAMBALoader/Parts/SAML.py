@@ -18,4 +18,15 @@ class ATSAML(CortexM0p.CortexM0p):
 
     @staticmethod
     def identify(id_name, id_values):
+        """Determines if the given chip identifiers positively identify a SAM L
+           series device.
+
+           Args:
+              id_name   : Name of the chip identifier being tested.
+              id_values : Chip identifier values extracted from the part.
+
+           Returns:
+               `True` if the given identifiers suggest the part is a SAM L
+               series device.
+        """
         return id_name == "DSU" and id_values.processor == 1 and id_values.family == 1 and id_values.series == 2

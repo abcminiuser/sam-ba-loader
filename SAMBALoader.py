@@ -14,53 +14,104 @@ import SAMBALoader
 import sys
 
 
+class SessionError(Exception):
+    pass
+
+
+class Session(object):
+
+    def __init__(self, samba):
+        self.samba = samba
+        self.part  = None
+
+
+    def _get_part(self, chip_ids):
+        matched_parts = SAMBALoader.PartLibrary.find_by_chip_ids(chip_ids)
+
+        if len(matched_parts) == 0:
+            raise SessionError('Unknown part.')
+        elif len(matched_parts) > 1:
+            raise SessionError('Multiple matching parts: %s' % [p.get_name() for p in matched_parts])
+        else:
+            return matched_parts[0]()
+
+
+    def _get_file_processor(self, filename):
+        matched_formats = SAMBALoader.FileFormatLibrary.find_by_name(filename)
+
+        if len(matched_formats) == 0:
+            raise SessionError('Unknown file format: %s' % filename)
+        elif len(matched_formats) > 1:
+            raise SessionError('Multiple matching file formats: %s' % [f.get_name() for f in matched_formats])
+        else:
+            return matched_formats[0]()
+
+
+    def get_part_identifiers(self):
+        return SAMBALoader.PartLibrary.get_chip_ids(self.samba)
+
+
+    def set_part_by_chip_ids(self, chip_ids):
+        self.part = self._get_part(chip_ids)
+
+        return self.part
+
+
+    def program_flash(self, filename):
+        if self.part is None:
+            raise SessionError('Part not set.')
+
+        file_format = self._get_file_processor(filename)
+        file_data   = file_format.read(filename)
+
+        self.part.program_flash(self.samba, data=file_data)
+
+
+    def verify_flash(self, filename):
+        if self.part is None:
+            raise SessionError('Part not set.')
+
+        file_format = self._get_file_processor(filename)
+        file_data   = file_format.read(filename)
+
+        verify_failure = self.part.verify_flash(self.samba, data=file_data)
+        if not verify_failure is None:
+            raise SessionError('Verification failure @ 0x%08x: 0x%08x != 0x%08x' % verify_failure)
+
+
+
 if __name__ == "__main__":
-    transport = SAMBALoader.Transports.Serial(port='COM3', log_to_console=False)
+    serial_device       = sys.argv[1]
+    filename_to_program = sys.argv[2]
 
     try:
-        samba    = SAMBALoader.SAMBA(transport)
-        parts    = SAMBALoader.PartLibrary
-        chip_ids = parts.get_chip_ids(samba)
-        part     = parts.find_by_chip_ids(chip_ids)
+        transport = SAMBALoader.Transports.Serial(port=serial_device, log_to_console=False)
+        samba     = SAMBALoader.SAMBA(transport)
+        session   = Session(samba)
 
         print 'SAMBA Version: %s' % samba.get_version()
+
+        chip_ids = session.get_part_identifiers()
         print '\n'.join('%s Identifiers: %s' % (k, v) for k, v in chip_ids.items())
 
-        if len(part) == 0:
-            print 'Error: Unknown part.'
-            sys.exit(1)
-        elif len(part) > 1:
-            print 'Error: Multiple matching parts: %s' % [p.get_name() for p in part]
-            sys.exit(1)
-        else:
-            part = part[0]()
-
+        part = session.set_part_by_chip_ids(chip_ids)
         print 'Discovered Part: %s' % part.get_name()
         if not part.is_tested():
-            print "Warning: selected part is currently untested."
-
-        filename = 'LED_TOGGLE_D20_XPRO.bin'
-        file_format_processor = SAMBALoader.FileFormatLibrary.find_by_name(filename)
-
-        if len(file_format_processor) == 0:
-            print 'Error: No file format reader found.'
-        elif len(file_format_processor) > 1:
-            print 'Error: Multiple file format readers found.'
-        else:
-            file_format_processor = file_format_processor[0]()
-
-        bin_data = file_format_processor.read(filename)
+            print "WARNING: selected part is currently untested."
 
         print "Programming flash..."
-        part.program_flash(samba, data=bin_data)
+        session.program_flash(filename_to_program)
 
         print "Verifying flash..."
-        verify_failure = part.verify_flash(samba, data=bin_data)
-        if not verify_failure is None:
-            print "ERROR: Verification failure @ 0x%08x: 0x%08x != 0x%08x" % verify_failure
-            sys.exit(1)
+        session.verify_flash(filename_to_program)
 
+        print "Done, booting to application."
         part.run_application(samba)
+
     except SAMBALoader.SerialTimeoutError:
         print "ERROR: Serial timeout while waiting for data."
+        sys.exit(1)
+
+    except SessionError as e:
+        print 'ERROR: ' + str(e)
         sys.exit(1)
