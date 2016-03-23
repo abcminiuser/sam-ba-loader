@@ -9,6 +9,7 @@
 # Released under a MIT license, see LICENCE.txt.
 
 import abc
+import logging
 
 
 class ChipIdentifierBase(object):
@@ -17,6 +18,8 @@ class ChipIdentifierBase(object):
     """
 
     __metaclass__ = abc.ABCMeta
+
+    LOG = logging.getLogger(__name__)
 
 
     @abc.abstractmethod

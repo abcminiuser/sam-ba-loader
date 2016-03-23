@@ -9,6 +9,7 @@
 # Released under a MIT license, see LICENCE.txt.
 
 import abc
+import logging
 
 
 class PartBase(object):
@@ -18,6 +19,8 @@ class PartBase(object):
 
     __metaclass__ = abc.ABCMeta
 
+
+    LOG = logging.getLogger(__name__)
 
     PART_UNTESTED = False
 

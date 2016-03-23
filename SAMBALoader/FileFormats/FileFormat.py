@@ -9,6 +9,7 @@
 # Released under a MIT license, see LICENCE.txt.
 
 import abc
+import logging
 
 
 class FileFormatBase(object):
@@ -17,6 +18,8 @@ class FileFormatBase(object):
     """
 
     __metaclass__ = abc.ABCMeta
+
+    LOG = logging.getLogger(__name__)
 
 
     class __metaclass__(type):

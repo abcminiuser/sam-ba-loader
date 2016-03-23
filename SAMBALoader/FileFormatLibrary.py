@@ -9,6 +9,7 @@
 # Released under a MIT license, see LICENCE.txt.
 
 import FileFormats
+import logging
 
 
 class FileFormatLibrary(object):
@@ -17,6 +18,8 @@ class FileFormatLibrary(object):
     """
 
     SUPPORTED_FORMATS = [c for c in FileFormats.FileFormatBase.__inheritors__]
+
+    LOG = logging.getLogger(__name__)
 
 
     @staticmethod

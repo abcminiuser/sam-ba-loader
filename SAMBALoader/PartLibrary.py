@@ -11,6 +11,7 @@
 import Parts
 import ChipIdentifiers
 import FlashControllers
+import logging
 
 
 class PartLibrary(object):
@@ -19,6 +20,8 @@ class PartLibrary(object):
     """
 
     SUPPORTED_PARTS = [c for c in Parts.PartBase.__inheritors__]
+
+    LOG = logging.getLogger(__name__)
 
 
     @staticmethod

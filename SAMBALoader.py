@@ -12,10 +12,13 @@
 
 import SAMBALoader
 import sys
+import logging
+
 
 
 class SessionError(Exception):
     pass
+
 
 
 class Session(object):
@@ -81,11 +84,13 @@ class Session(object):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING)
+
     serial_device       = sys.argv[1]
     filename_to_program = sys.argv[2]
 
     try:
-        transport = SAMBALoader.Transports.Serial(port=serial_device, log_to_console=False)
+        transport = SAMBALoader.Transports.Serial(port=serial_device)
         samba     = SAMBALoader.SAMBA(transport)
         session   = Session(samba)
 

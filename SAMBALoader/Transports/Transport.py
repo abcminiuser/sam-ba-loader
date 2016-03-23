@@ -9,6 +9,7 @@
 # Released under a MIT license, see LICENCE.txt.
 
 import abc
+import logging
 
 
 class TransportBase(object):
@@ -18,9 +19,11 @@ class TransportBase(object):
 
     __metaclass__ = abc.ABCMeta
 
+    LOG = logging.getLogger(__name__)
+
 
     @abc.abstractmethod
-    def read(self, length=None):
+    def read(self, length):
         """Reads a given number of bytes from the transport.
 
             Args:

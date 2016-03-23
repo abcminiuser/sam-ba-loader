@@ -9,7 +9,7 @@
 # Released under a MIT license, see LICENCE.txt.
 
 import struct
-
+import logging
 
 
 class SAMBACommands:
@@ -32,6 +32,9 @@ class SAMBA(object):
        an established transport, and receive responses.
     """
 
+    LOG = logging.getLogger(__name__)
+
+
     def __init__(self, transport):
         """Instantiates a SAMBA instance with a given transport, ready for use.
 
@@ -41,7 +44,9 @@ class SAMBA(object):
 
         self.transport = transport
 
-        self._execute(SAMBACommands.SET_NORMAL_MODE)
+        self.LOG.debug('Set normal mode');
+        self.transport.write(self._serialize_command(SAMBACommands.SET_NORMAL_MODE, arguments=[]))
+        self.transport.read(2)
 
 
     def _to_32bit_hex(self, value):
@@ -61,7 +66,7 @@ class SAMBA(object):
             return "%08x" % value
 
 
-    def _execute(self, command, arguments=None, read_length=None):
+    def _serialize_command(self, command, arguments=None):
         """Executes a low level SAM-BA command, sending the command and
            parameters to the device and reading back the response.
 
@@ -69,10 +74,9 @@ class SAMBA(object):
                command     : `SAMBACommands` command to issue
                arguments   : List of one or two arguments to send with the
                              command, or `None` if no arguments should be sent.
-               read_length : Number of response bytes that are expected.
 
            Returns:
-               Read response from the device after the command was issued.
+               Serialized SAMBA command with the embedded arguments (if any).
         """
 
         if arguments is None or len(arguments) is 0:
@@ -84,10 +88,7 @@ class SAMBA(object):
         else:
             raise AssertionError("Invalid SAMBA command argument count: %d" % len(arguments))
 
-        data = "%s%s#" % (command, arguments)
-
-        self.transport.write(data)
-        return self.transport.read(read_length)
+        return "%s%s#" % (command, arguments)
 
 
     def run_from_address(self, address):
@@ -97,7 +98,8 @@ class SAMBA(object):
                address : Address in the attached device to run from
         """
 
-        self._execute(SAMBACommands.GO, arguments=[address], read_length=0)
+        self.LOG.debug('Run @ 0x%08x' % address)
+        self.transport.write(self._serialize_command(SAMBACommands.GO, arguments=[address]))
 
 
     def get_version(self):
@@ -107,7 +109,17 @@ class SAMBA(object):
                Version string returned by the attached device.
         """
 
-        return self._execute(SAMBACommands.GET_VERSION).strip()
+        self.transport.write(self._serialize_command(SAMBACommands.GET_VERSION, arguments=[]))
+
+        version = bytearray()
+        while True:
+            version += self.transport.read(1)
+            if '\n\r' in version:
+                break
+        version = version.strip()
+
+        self.LOG.debug('Read Version = %s' % version)
+        return version
 
 
     def write_word(self, address, word):
@@ -118,7 +130,8 @@ class SAMBA(object):
                word    : 32-bit word of data to write
         """
 
-        self._execute(SAMBACommands.WRITE_WORD, arguments=[address, word], read_length=0)
+        self.transport.write(self._serialize_command(SAMBACommands.WRITE_WORD, arguments=[address, word]))
+        self.LOG.debug('Write Word @ 0x%08x = 0x%08x' % (address, word))
 
 
     def read_word(self, address):
@@ -131,8 +144,11 @@ class SAMBA(object):
                Word of data read from the attached device.
         """
 
-        word = self._execute(SAMBACommands.READ_WORD, arguments=[address], read_length=4)
-        return struct.unpack("<I", word)[0]
+        self.transport.write(self._serialize_command(SAMBACommands.READ_WORD, arguments=[address]))
+        word = struct.unpack("<I", self.transport.read(4))[0]
+
+        self.LOG.debug('Read Word @ 0x%08x = 0x%08x' % (address, word))
+        return word
 
 
     def write_half_word(self, address, half_word):
@@ -142,7 +158,9 @@ class SAMBA(object):
                address   : Address to write the half-word at.
                half_word : 16-bit half-word of data to write
         """
-        self._execute(SAMBACommands.WRITE_HALF_WORD, arguments=[address, half_word], read_length=0)
+
+        self.transport.write(self._serialize_command(SAMBACommands.WRITE_HALF_WORD, arguments=[address, half_word]))
+        self.LOG.debug('Write Half Word @ 0x%08x = 0x%04x' % (address, half_word))
 
 
     def read_half_word(self, address):
@@ -155,8 +173,11 @@ class SAMBA(object):
                Half-word of data read from the attached device.
         """
 
-        half_word = self._execute(SAMBACommands.READ_HALF_WORD, arguments=[address], read_length=2)
-        return struct.unpack("<H", half_word)[0]
+        self.transport.write(self._serialize_command(SAMBACommands.READ_HALF_WORD, arguments=[address]))
+        half_word = struct.unpack("<H", self.transport.read(2))[0]
+
+        self.LOG.debug('Read Half Word @ 0x%08x = 0x%04x' % (address, half_word))
+        return half_word
 
 
     def write_byte(self, address, byte):
@@ -167,7 +188,8 @@ class SAMBA(object):
                byte    : Byte of data to write
         """
 
-        self._execute(SAMBACommands.WRITE_BYTE, arguments=[address, byte], read_length=0)
+        self.transport.write(self._serialize_command(SAMBACommands.WRITE_BYTE, arguments=[address, byte]))
+        self.LOG.debug('Write Byte @ 0x%08x = 0x%02x' % (address, byte))
 
 
     def read_byte(self, address):
@@ -180,5 +202,8 @@ class SAMBA(object):
                Byte of data read from the attached device.
         """
 
-        byte = self._execute(SAMBACommands.READ_BYTE, arguments=[address], read_length=1)
-        return struct.unpack("<B", byte)[0]
+        self.transport.write(self._serialize_command(SAMBACommands.READ_BYTE, arguments=[address]))
+        byte = struct.unpack("<B", self.transport.read(1))[0]
+
+        self.LOG.debug('Read Byte @ 0x%08x = 0x%02x' % (address, byte))
+        return byte
