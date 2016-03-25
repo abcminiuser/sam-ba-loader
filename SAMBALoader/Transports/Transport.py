@@ -12,6 +12,15 @@ import abc
 import logging
 
 
+
+class TimeoutError(Exception):
+    """Exception thrown when a read operation times out while waiting for more
+       data.
+    """
+    pass
+
+
+
 class TransportBase(object):
     """Base class for SAM-BA transports. Derived instances should override all
        methods listed here.

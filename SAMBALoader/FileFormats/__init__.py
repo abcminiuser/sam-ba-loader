@@ -8,5 +8,5 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-from FileFormat import *
-from BinFormat import *
+from .FileFormat import *
+from .BinFormat import *

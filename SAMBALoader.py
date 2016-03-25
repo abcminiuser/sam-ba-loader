@@ -11,6 +11,7 @@
 # Released under a MIT license, see LICENCE.txt.
 
 import SAMBALoader
+import SAMBALoader.Transports
 import sys
 import logging
 
@@ -94,29 +95,29 @@ if __name__ == "__main__":
         samba     = SAMBALoader.SAMBA(transport)
         session   = Session(samba)
 
-        print 'SAMBA Version: %s' % samba.get_version()
+        print('SAMBA Version: %s' % samba.get_version())
 
         chip_ids = session.get_part_identifiers()
-        print '\n'.join('%s Identifiers: %s' % (k, v) for k, v in chip_ids.items())
+        print('\n'.join('%s Identifiers: %s' % (k, v) for k, v in chip_ids.items()))
 
         part = session.set_part_by_chip_ids(chip_ids)
-        print 'Discovered Part: %s' % part.get_name()
+        print('Discovered Part: %s' % part.get_name())
         if not part.is_tested():
-            print "WARNING: selected part is currently untested."
+            print("WARNING: selected part is currently untested.")
 
-        print "Programming flash..."
+        print('Programming flash...')
         session.program_flash(filename_to_program)
 
-        print "Verifying flash..."
+        print('Verifying flash...')
         session.verify_flash(filename_to_program)
 
-        print "Done, booting to application."
+        print('Done, booting to application.')
         part.run_application(samba)
 
-    except SAMBALoader.SerialTimeoutError:
-        print "ERROR: Serial timeout while waiting for data."
+    except SAMBALoader.Transports.TimeoutError:
+        print('ERROR: Timeout while waiting for data.')
         sys.exit(1)
 
     except SessionError as e:
-        print 'ERROR: ' + str(e)
+        print('ERROR: ' + str(e))
         sys.exit(1)

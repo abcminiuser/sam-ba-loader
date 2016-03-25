@@ -8,7 +8,7 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import FileFormat
+from . import FileFormat
 
 
 class BinFormat(FileFormat.FileFormatBase):

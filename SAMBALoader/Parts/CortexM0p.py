@@ -8,7 +8,7 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import Part
+from . import Part
 from .. import FlashControllers
 
 

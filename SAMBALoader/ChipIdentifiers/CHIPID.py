@@ -8,7 +8,7 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import ChipIdentifier
+from .import ChipIdentifier
 
 
 class CHIPID(ChipIdentifier.ChipIdentifierBase):

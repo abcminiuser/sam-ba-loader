@@ -8,7 +8,7 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-from ChipIdentifier import *
-from CHIPID import *
-from CPUID import *
-from DSU import *
+from .ChipIdentifier import *
+from .CHIPID import *
+from .CPUID import *
+from .DSU import *

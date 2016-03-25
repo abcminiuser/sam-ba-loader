@@ -8,8 +8,21 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import FileFormats
+from . import FileFormats
 import logging
+
+
+def _get_subclasses(classname):
+    """Recursively obtains all subclasses of the given class."""
+
+    subclasses = []
+
+    for p in classname.__subclasses__():
+        subclasses.append(p)
+        subclasses.extend(_get_subclasses(p))
+
+    return subclasses
+
 
 
 class FileFormatLibrary(object):
@@ -17,7 +30,7 @@ class FileFormatLibrary(object):
        methods to retrieve a given part by its chip identifiers, or by name.
     """
 
-    SUPPORTED_FORMATS = [c for c in FileFormats.FileFormatBase.__inheritors__]
+    SUPPORTED_FORMATS = _get_subclasses(FileFormats.FileFormatBase)
 
     LOG = logging.getLogger(__name__)
 

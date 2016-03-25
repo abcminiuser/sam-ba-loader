@@ -8,5 +8,5 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-from FlashController import *
-from NVMCTRL import *
+from .FlashController import *
+from .NVMCTRL import *

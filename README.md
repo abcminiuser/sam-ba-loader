@@ -8,7 +8,13 @@ This is intended to provide an easy way to reprogram Atmel SAM devices running S
 
 ## Dependencies
 
-Python 2.x should work, Python 3.x currently untested. Requires the popular `serialport` library.
+Requires Python 2.7 or 3.x.
+
+From a fresh Python install, use:
+```
+pip install pyserial
+```
+Before running the tool for the first time to install the required libraries.
 
 
 ## Status

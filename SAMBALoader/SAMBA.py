@@ -86,9 +86,9 @@ class SAMBA(object):
         elif len(arguments) is 2:
             arguments = self._to_32bit_hex(arguments[0]) + ',' + self._to_32bit_hex(arguments[1])
         else:
-            raise AssertionError("Invalid SAMBA command argument count: %d" % len(arguments))
+            raise AssertionError('Invalid SAMBA command argument count: %d' % len(arguments))
 
-        return "%s%s#" % (command, arguments)
+        return '%s%s#' % (command, arguments)
 
 
     def run_from_address(self, address):
@@ -114,9 +114,9 @@ class SAMBA(object):
         version = bytearray()
         while True:
             version += self.transport.read(1)
-            if '\n\r' in version:
+            if b'\n\r' in version:
                 break
-        version = version.strip()
+        version = version.decode('ascii').strip()
 
         self.LOG.debug('Read Version = %s' % version)
         return version

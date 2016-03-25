@@ -8,8 +8,8 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-from Part import *
-from CortexM0p import *
-from SAMC import *
-from SAMD import *
-from SAML import *
+from .Part import *
+from .CortexM0p import *
+from .SAMC import *
+from .SAMD import *
+from .SAML import *

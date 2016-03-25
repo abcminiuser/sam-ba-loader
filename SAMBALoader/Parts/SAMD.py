@@ -8,11 +8,11 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import Part
-import CortexM0p
+from . import Part
+from . import CortexM0p
 
 
-class ATSAMD(CortexM0p.CortexM0p):
+class ATSAMD(CortexM0p):
     """Part class for all SAM D based parts."""
 
     @staticmethod

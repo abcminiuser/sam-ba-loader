@@ -8,12 +8,12 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-from SAMBA import *
-from PartLibrary import *
-from FileFormatLibrary import *
+from .SAMBA import *
+from .PartLibrary import *
+from .FileFormatLibrary import *
 
-from Transports import *
-from Parts import *
-from ChipIdentifiers import *
-from FlashControllers import *
-from FileFormats import *
+from . import Transports
+from . import Parts
+from . import ChipIdentifiers
+from . import FlashControllers
+from . import FileFormats

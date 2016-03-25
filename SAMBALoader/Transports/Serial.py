@@ -8,15 +8,8 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import Transport
+from . import Transport
 import logging
-
-
-class SerialTimeoutError(Exception):
-    """Exception thrown when a read operation times out while waiting for more
-       data.
-    """
-    pass
 
 
 class Serial(Transport.TransportBase):
@@ -37,7 +30,10 @@ class Serial(Transport.TransportBase):
 
     def __del__(self):
         """Destructor for the Serial transport, closing all resources."""
-        self.serialport.close()
+        try:
+            self.serialport.close()
+        except:
+            pass
 
 
     def read(self, length):
@@ -56,9 +52,9 @@ class Serial(Transport.TransportBase):
 
         data = self.serialport.read(length)
         if len(data) != length:
-            raise SerialTimeoutError()
+            raise Transport.TimeoutError()
 
-        self.LOG.debug('Receive %s' % [ord(b) for b in data])
+        self.LOG.debug('Receive %s' % [b for b in data])
 
         return bytes(data)
 
@@ -70,6 +66,6 @@ class Serial(Transport.TransportBase):
                 data : Bytes to write.
         """
 
-        self.LOG.debug('Send %s' % [ord(b) for b in data])
+        self.LOG.debug('Send %s' % [b for b in data])
 
-        self.serialport.write(data)
+        self.serialport.write(data.encode('ascii', 'ignore'))

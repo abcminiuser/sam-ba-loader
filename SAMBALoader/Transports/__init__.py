@@ -8,5 +8,5 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-from Transport import *
-from Serial import *
+from .Transport import *
+from .Serial import *

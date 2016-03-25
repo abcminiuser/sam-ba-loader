@@ -8,12 +8,12 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import Part
-import CortexM0p
+from . import Part
+from . import CortexM0p
 
 
 @Part.UntestedPart
-class ATSAML(CortexM0p.CortexM0p):
+class ATSAML(CortexM0p):
     """Part class for all SAM L series parts."""
 
     @staticmethod

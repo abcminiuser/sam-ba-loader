@@ -22,22 +22,6 @@ class FileFormatBase(object):
     LOG = logging.getLogger(__name__)
 
 
-    class __metaclass__(type):
-        """Metaclass instantiation, which tracks all classes which extend this
-           base class. This is used to automatically inject all objects which
-           derive from this interface into the part library, so that they are
-           automatically supported.
-        """
-        __inheritors__ = []
-
-        def __new__(meta, name, bases, dct):
-            klass = type.__new__(meta, name, bases, dct)
-            for base in klass.mro()[1:-1]:
-                if not klass in meta.__inheritors__:
-                    meta.__inheritors__.append(klass)
-            return klass
-
-
     @staticmethod
     @abc.abstractmethod
     def can_process(self, filename):

@@ -8,7 +8,13 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import FlashController
+from . import FlashController
+
+try:
+    xrange
+except NameError:
+    # Remap xrange to range for Python 3
+    xrange = range
 
 
 class NVMCTRL(FlashController.FlashControllerBase):

@@ -19,26 +19,9 @@ class PartBase(object):
 
     __metaclass__ = abc.ABCMeta
 
-
     LOG = logging.getLogger(__name__)
 
     PART_UNTESTED = False
-
-
-    class __metaclass__(type):
-        """Metaclass instantiation, which tracks all classes which extend this
-           base class. This is used to automatically inject all objects which
-           derive from this interface into the part library, so that they are
-           automatically supported.
-        """
-        __inheritors__ = []
-
-        def __new__(meta, name, bases, dct):
-            klass = type.__new__(meta, name, bases, dct)
-            for base in klass.mro()[1:-1]:
-                if not klass in meta.__inheritors__:
-                    meta.__inheritors__.append(klass)
-            return klass
 
 
     def is_tested(self):
@@ -151,4 +134,8 @@ def UntestedPart(part):
     """Decorator applied to parts who have not yet been physically tested to
        ensure they work as expected.
     """
+
+    if not issubclass(part, PartBase):
+        raise TypeError("Untested part decorator is for Part instances only.")
+
     part.PART_UNTESTED = True

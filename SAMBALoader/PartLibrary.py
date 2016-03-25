@@ -8,18 +8,32 @@
 #
 # Released under a MIT license, see LICENCE.txt.
 
-import Parts
-import ChipIdentifiers
-import FlashControllers
+from . import Parts
+from . import ChipIdentifiers
+from . import FlashControllers
 import logging
 
 
+def _get_subclasses(classname):
+    """Recursively obtains all subclasses of the given class."""
+
+    subclasses = []
+
+    for p in classname.__subclasses__():
+        subclasses.append(p)
+        subclasses.extend(_get_subclasses(p))
+
+    return subclasses
+
+
 class PartLibrary(object):
+
+
     """Part library class, which lists all supported devices and provides
        methods to retrieve a given part by its chip identifiers, or by name.
     """
 
-    SUPPORTED_PARTS = [c for c in Parts.PartBase.__inheritors__]
+    SUPPORTED_PARTS = _get_subclasses(Parts.PartBase)
 
     LOG = logging.getLogger(__name__)
 
