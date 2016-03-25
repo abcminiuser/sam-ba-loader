@@ -87,6 +87,11 @@ class Session(object):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARNING)
 
+    if len(sys.argv) != 3:
+        print("Atmel SAM-BA Client")
+        print("\tUsage: %s [PORT] [FILENAME]" % sys.argv[0])
+        sys.exit(1)
+
     serial_device       = sys.argv[1]
     filename_to_program = sys.argv[2]
 

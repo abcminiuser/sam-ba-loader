@@ -20,20 +20,15 @@ class DSU(ChipIdentifier.ChipIdentifierBase):
     DID_OFFSET = 0x0018
 
     PROCESSOR = {
-        0 : "CORTEX M0",
-        1 : "CORTEX M0+",
-        2 : "CORTEX M3",
-        3 : "CORTEX M4",
+        0 : "Cortex-M0",
+        1 : "Cortex-M0+",
+        2 : "Cortex-M3",
+        3 : "Cortex-M4",
     }
     FAMILY = {
         0 : "SAM D",
         1 : "SAM L",
         2 : "SAM C",
-    }
-    SERIES = {
-        0  : "CORTEX M0+ Basic Feature Set",
-        1  : "Cortex M0+ CPU, Advanced Feature Set, DMA, USB",
-        2  : "Cortex M0+ CPU, DMA",
     }
 
 
@@ -60,7 +55,7 @@ class DSU(ChipIdentifier.ChipIdentifierBase):
 
         info  = "\n\tProcessor:\t" + self._lookup(self.PROCESSOR, self.processor)
         info += "\n\tFamily:\t\t" + self._lookup(self.FAMILY, self.family)
-        info += "\n\tSeries:\t\t" + self._lookup(self.SERIES, self.series)
+        info += "\n\tSeries:\t\t" + str(self.series)
         info += "\n\tDie:\t\t" + str(self.die)
         info += "\n\tRevision:\t" + str(self.revision)
         info += "\n\tVariant:\t" + str(self.variant)
