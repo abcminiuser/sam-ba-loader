@@ -29,4 +29,4 @@ class ATSAMC(CortexM0p):
                `True` if the given identifiers suggest the part is a SAM C
                series device.
         """
-        return id_name == "DSU" and id_values.processor == 1 and id_values.family == 2 and id_values.series == 1
+        return id_name == 'DSU' and id_values.processor == 1 and id_values.family == 2 and id_values.series == 1

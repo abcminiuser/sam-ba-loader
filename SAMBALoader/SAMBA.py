@@ -145,7 +145,7 @@ class SAMBA(object):
         """
 
         self.transport.write(self._serialize_command(SAMBACommands.READ_WORD, arguments=[address]))
-        word = struct.unpack("<I", self.transport.read(4))[0]
+        word = struct.unpack('<I', self.transport.read(4))[0]
 
         self.LOG.debug('Read Word @ 0x%08x = 0x%08x' % (address, word))
         return word
@@ -174,7 +174,7 @@ class SAMBA(object):
         """
 
         self.transport.write(self._serialize_command(SAMBACommands.READ_HALF_WORD, arguments=[address]))
-        half_word = struct.unpack("<H", self.transport.read(2))[0]
+        half_word = struct.unpack('<H', self.transport.read(2))[0]
 
         self.LOG.debug('Read Half Word @ 0x%08x = 0x%04x' % (address, half_word))
         return half_word
@@ -203,7 +203,7 @@ class SAMBA(object):
         """
 
         self.transport.write(self._serialize_command(SAMBACommands.READ_BYTE, arguments=[address]))
-        byte = struct.unpack("<B", self.transport.read(1))[0]
+        byte = struct.unpack('<B', self.transport.read(1))[0]
 
         self.LOG.debug('Read Byte @ 0x%08x = 0x%02x' % (address, byte))
         return byte

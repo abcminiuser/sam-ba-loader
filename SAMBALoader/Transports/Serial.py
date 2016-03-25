@@ -23,7 +23,12 @@ class Serial(Transport.TransportBase):
                baud : Baud rate to use.
                log_to_console: If `True`, traffic will be logged to the console.
         """
-        import serial
+
+        try:
+            import serial
+        except ImportError as e:
+            self.LOG.fatal('Could not import pyserial library. Is it installed?')
+            raise e
 
         self.serialport = serial.Serial(port, baudrate=baud, timeout=1)
 

@@ -28,4 +28,4 @@ class ATSAMD(CortexM0p):
                `True` if the given identifiers suggest the part is a SAM D
                series device.
         """
-        return id_name == "DSU" and id_values.processor == 1 and id_values.family == 0 and id_values.series == 0
+        return id_name == 'DSU' and id_values.processor == 1 and id_values.family == 0 and id_values.series == 0

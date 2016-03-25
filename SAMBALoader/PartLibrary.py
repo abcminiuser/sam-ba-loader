@@ -59,7 +59,7 @@ class PartLibrary(object):
 
         if identifiers['CPUID'].part in identifiers['CPUID'].PART:
             # Cortex-M0 devices have a DSU for additional information, others use a CHIPID
-            if "M0" in identifiers['CPUID'].PART[identifiers['CPUID'].part]:
+            if 'M0' in identifiers['CPUID'].PART[identifiers['CPUID'].part]:
                 identifiers['DSU'] = ChipIdentifiers.DSU(base_address=0x41002000)
                 identifiers['DSU'].read(samba)
             else:

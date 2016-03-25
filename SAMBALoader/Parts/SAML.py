@@ -29,4 +29,4 @@ class ATSAML(CortexM0p):
                `True` if the given identifiers suggest the part is a SAM L
                series device.
         """
-        return id_name == "DSU" and id_values.processor == 1 and id_values.family == 1 and id_values.series == 2
+        return id_name == 'DSU' and id_values.processor == 1 and id_values.family == 1 and id_values.series == 2

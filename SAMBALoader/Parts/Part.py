@@ -136,6 +136,6 @@ def UntestedPart(part):
     """
 
     if not issubclass(part, PartBase):
-        raise TypeError("Untested part decorator is for Part instances only.")
+        raise TypeError('Untested part decorator is for Part instances only.')
 
     part.PART_UNTESTED = True

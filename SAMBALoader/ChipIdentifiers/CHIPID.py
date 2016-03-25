@@ -21,46 +21,46 @@ class CHIPID(ChipIdentifier.ChipIdentifierBase):
     EXID_OFFSET = 0x0004
 
     FLASH_BANK_SIZE = {
-        0  : "NONE",
-        1  : "8KB",
-        2  : "16KB",
-        3  : "32KB",
-        5  : "64KB",
-        7  : "128KB",
-        9  : "256KB",
-        10 : "512KB",
-        12 : "1024KB",
-        14 : "2048KB",
+        0  : 'NONE',
+        1  : '8KB',
+        2  : '16KB',
+        3  : '32KB',
+        5  : '64KB',
+        7  : '128KB',
+        9  : '256KB',
+        10 : '512KB',
+        12 : '1024KB',
+        14 : '2048KB',
     }
 
     SRAM_SIZE = {
-        0  : "48KB",
-        1  : "1KB",
-        2  : "2KB",
-        3  : "6KB",
-        4  : "24KB",
-        5  : "4KB",
-        6  : "80KB",
-        7  : "160KB",
-        8  : "8KB",
-        9  : "16KB",
-        10 : "32KB",
-        11 : "64KB",
-        12 : "128KB",
-        13 : "256KB",
-        14 : "96KB",
-        15 : "512KB",
+        0  : '48KB',
+        1  : '1KB',
+        2  : '2KB',
+        3  : '6KB',
+        4  : '24KB',
+        5  : '4KB',
+        6  : '80KB',
+        7  : '160KB',
+        8  : '8KB',
+        9  : '16KB',
+        10 : '32KB',
+        11 : '64KB',
+        12 : '128KB',
+        13 : '256KB',
+        14 : '96KB',
+        15 : '512KB',
     }
 
     PROCESSOR = {
-        0  : "Cortex-M7",
-        1  : "ARM946ES",
-        2  : "ARM7TDMI",
-        3  : "Cortex-M3",
-        4  : "ARM920T",
-        5  : "ARM926EJS",
-        6  : "Cortex-A5",
-        7  : "Cortex-M4",
+        0  : 'Cortex-M7',
+        1  : 'ARM946ES',
+        2  : 'ARM7TDMI',
+        3  : 'Cortex-M3',
+        4  : 'ARM920T',
+        5  : 'ARM926EJS',
+        6  : 'Cortex-A5',
+        7  : 'Cortex-M4',
     }
 
 
@@ -85,13 +85,13 @@ class CHIPID(ChipIdentifier.ChipIdentifierBase):
                printing to a console.
         """
 
-        info  = "\n\tVersion:\t" + str(self.version)
-        info += "\n\tProcessor:\t" + self._lookup(self.PROCESSOR, self.processor)
-        info += "\n\tArchitecture:\t" + str(self.architecture)
-        info += "\n\tFlash Bank 0:\t" + self._lookup(self.FLASH_BANK_SIZE, self.flash[0])
-        info += "\n\tFlash Bank 1:\t" + self._lookup(self.FLASH_BANK_SIZE, self.flash[1])
-        info += "\n\tSRAM:\t\t" + self._lookup(self.SRAM_SIZE, self.sram)
-        info += "\n\tExtended ID:\t" + str(self.extended_chip_id)
+        info  = '\n\tVersion:\t' + str(self.version)
+        info += '\n\tProcessor:\t' + self._lookup(self.PROCESSOR, self.processor)
+        info += '\n\tArchitecture:\t' + str(self.architecture)
+        info += '\n\tFlash Bank 0:\t' + self._lookup(self.FLASH_BANK_SIZE, self.flash[0])
+        info += '\n\tFlash Bank 1:\t' + self._lookup(self.FLASH_BANK_SIZE, self.flash[1])
+        info += '\n\tSRAM:\t\t' + self._lookup(self.SRAM_SIZE, self.sram)
+        info += '\n\tExtended ID:\t' + str(self.extended_chip_id)
 
         return info
 

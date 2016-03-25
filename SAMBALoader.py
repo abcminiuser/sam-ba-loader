@@ -84,7 +84,7 @@ class Session(object):
 
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     logging.basicConfig(level=logging.WARNING)
 
     serial_device       = sys.argv[1]
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         part = session.set_part_by_chip_ids(chip_ids)
         print('Discovered Part: %s' % part.get_name())
         if not part.is_tested():
-            print("WARNING: selected part is currently untested.")
+            print('WARNING: selected part is currently untested.')
 
         print('Programming flash...')
         session.program_flash(filename_to_program)

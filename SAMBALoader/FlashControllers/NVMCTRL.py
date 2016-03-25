@@ -28,9 +28,9 @@ class NVMCTRL(FlashController.FlashControllerBase):
     INTFLAG_ERROR    = (1 << 1)
 
     CMDA_COMMANDS    = {
-        "ER"  : 0x02,
-        "WP"  : 0x04,
-        "PBC" : 0x44
+        'ER'  : 0x02,
+        'WP'  : 0x04,
+        'PBC' : 0x44,
     }
 
     PAGES_PER_ROW    = 4
