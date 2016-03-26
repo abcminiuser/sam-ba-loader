@@ -64,14 +64,13 @@ class Serial(Transport.TransportBase):
         """Reads a given number of bytes from the serial interface.
 
             Args:
-                length : Number of bytes to read. If `None`, a full line will be
-                         read until a terminator is reached.
+                length : Number of bytes to read.
 
             Returns:
                 Byte array of the received data.
 
             Raises:
-                SerialTimeoutError if the read operation timed out.
+                TimeoutError if the read operation timed out.
         """
 
         data = self.serialport.read(length)
