@@ -128,10 +128,7 @@ class NVMCTRL(FlashController.FlashControllerBase):
         self._wait_while_busy(samba)
 
         for offset in xrange(0, len(data), 4):
-            word  = data[offset + 0]
-            word |= data[offset + 1] << 8
-            word |= data[offset + 2] << 16
-            word |= data[offset + 3] << 24
+            word = sum([x << (8 * i) for i, x in enumerate(data[offset : offset + 4])])
             samba.write_word(address + offset, word)
 
             if offset and offset % self.page_size == 0:
@@ -153,19 +150,18 @@ class NVMCTRL(FlashController.FlashControllerBase):
 
            Returns:
                `None` if the given data matches the data in the device at the
-               specified offset, or a `(address, actual, expected)` tuple of the
-               first mismatch.
+               specified offset, or a `(address, actual_word, expected_word)`
+               tuple of the first mismatch.
         """
 
-        for offset in xrange(0, len(data), 4):
-            word  = data[offset + 0]
-            word |= data[offset + 1] << 8
-            word |= data[offset + 2] << 16
-            word |= data[offset + 3] << 24
+        actual_data = self.read_flash(samba, address, len(data))
 
-            actual_word = samba.read_word(address + offset)
-            if actual_word != word:
-                return (address + offset, actual_word, word)
+        for offset in xrange(0, len(data), 4):
+            expected_word = sum([x << (8 * i) for i, x in enumerate(actual_data[offset : offset + 4])])
+            actual_word   = sum([x << (8 * i) for i, x in enumerate(data[offset : offset + 4])])
+
+            if actual_word != expected_word:
+                return (address + offset, actual_word, expected_word)
 
         return None
 
@@ -188,14 +184,4 @@ class NVMCTRL(FlashController.FlashControllerBase):
         if length is None:
             length = (self.pages * self.page_size) - address
 
-        data = []
-
-        for offset in xrange(0, length, 4):
-            word = samba.read_word(address + offset)
-
-            data.append(word >> 0  & 0xFF)
-            data.append(word >> 8  & 0xFF)
-            data.append(word >> 16 & 0xFF)
-            data.append(word >> 24 & 0xFF)
-
-        return data
+        return samba.read_block(address, length)

@@ -107,8 +107,8 @@ class PartBase(object):
 
            Returns:
                `None` if the given data matches the data in the device at the
-               specified offset, or a `(address, actual, expected)` tuple of the
-               first mismatch.
+               specified offset, or a `(address, actual_word, expected_word)`
+               tuple of the first mismatch.
         """
         pass
 
