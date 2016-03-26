@@ -13,6 +13,7 @@ Requires Python 2.7 or 3.x.
 From a fresh Python install, use:
 ```
 pip install pyserial
+pip install xmodem
 ```
 Before running the tool for the first time to install the required libraries.
 

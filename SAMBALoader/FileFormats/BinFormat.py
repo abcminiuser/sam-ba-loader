@@ -54,8 +54,9 @@ class BinFormat(FileFormat.FileFormatBase):
         """
 
         with open(filename, 'rb') as f:
-            self.data = [ord(b) for b in f.read()]
+            self.data = [ord(b) if isinstance(b, str) else b for b in f.read()]
 
+        self.LOG.debug('Read bin file \'%s\' (%d bytes)' % (filename, len(self.data)))
         return self
 
 
@@ -68,3 +69,5 @@ class BinFormat(FileFormat.FileFormatBase):
 
         with open(filename, 'wb') as f:
             f.write(self.data)
+
+        self.LOG.debug('Wrote bin file \'%s\' (%d bytes)' % (filename, len(self.data)))

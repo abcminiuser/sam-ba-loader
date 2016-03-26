@@ -10,6 +10,7 @@
 
 import struct
 import logging
+from . import Transports
 
 
 class SAMBACommands:
@@ -137,12 +138,11 @@ class SAMBA(object):
                data    : Data to write.
         """
 
-        if not self.is_usb:
-            raise NotImplementedError('XMODEM protocol not yet implemented')
-            # TODO: XMODEM
-
         self.transport.write(self._serialize_command(SAMBACommands.SEND_FILE, arguments=[address, len(data)]))
-        self.transport.write(data)
+        if not self.is_usb:
+            Transports.XMODEM(self.transport).write(data)
+        else:
+            self.transport.write(data)
         self.LOG.debug('Write Block @ 0x%08x (%d bytes)' % (address, len(data)))
 
 
@@ -157,15 +157,14 @@ class SAMBA(object):
                Block of data read from the attached device.
         """
 
-        if not self.is_usb:
-            raise NotImplementedError('XMODEM protocol not yet implemented')
-            # TODO: XMODEM
-
         self.transport.write(self._serialize_command(SAMBACommands.RECEIVE_FILE, arguments=[address, length]))
-        data = self.transport.read()
+        if not self.is_usb:
+            data = Transports.XMODEM(self.transport).read(length)
+        else:
+            data = self.transport.read(length)
 
         self.LOG.debug('Read Block @ 0x%08x (%d bytes)' % (address, length))
-        return word
+        return data
 
 
     def write_word(self, address, word):

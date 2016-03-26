@@ -10,3 +10,4 @@
 
 from .Transport import *
 from .Serial import *
+from .XMODEM import *
