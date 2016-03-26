@@ -41,6 +41,25 @@ class Serial(Transport.TransportBase):
             pass
 
 
+    def _to_byte_array(self, data):
+        """Encodes an input string or list of values/characters into a flat
+           byte array of bytes. This can be used to convert a Unicode string
+           (using an ASCII only encoding) or list of characters and integers
+           into a flat set of bytes for transmission.
+
+           Args:
+              data : input data to convert
+
+           Returns:
+              Flat byte array.
+        """
+
+        if isinstance(data, str):
+            return bytearray(data.encode('ascii', 'ignore'))
+        else:
+            return bytearray([ord(d) if isinstance(d, str) else d for d in data])
+
+
     def read(self, length):
         """Reads a given number of bytes from the serial interface.
 
@@ -61,7 +80,7 @@ class Serial(Transport.TransportBase):
 
         self.LOG.debug('Receive %s' % [b for b in data])
 
-        return bytes(data)
+        return bytearray(data)
 
 
     def write(self, data):
@@ -73,4 +92,4 @@ class Serial(Transport.TransportBase):
 
         self.LOG.debug('Send %s' % [b for b in data])
 
-        self.serialport.write(data.encode('ascii', 'ignore'))
+        self.serialport.write(self._to_byte_array(data))

@@ -18,6 +18,8 @@ class SAMBACommands:
     SET_NORMAL_MODE = 'N'
     GO              = 'G'
     GET_VERSION     = 'V'
+    SEND_FILE       = 'S'
+    RECEIVE_FILE    = 'R'
     WRITE_WORD      = 'W'
     READ_WORD       = 'w'
     WRITE_HALF_WORD = 'H'
@@ -35,7 +37,7 @@ class SAMBA(object):
     LOG = logging.getLogger(__name__)
 
 
-    def __init__(self, transport):
+    def __init__(self, transport, is_usb=False):
         """Instantiates a SAMBA instance with a given transport, ready for use.
 
            Args:
@@ -43,8 +45,13 @@ class SAMBA(object):
         """
 
         self.transport = transport
+        self.is_usb = is_usb
 
-        self.LOG.debug('Set normal mode');
+        if not self.is_usb:
+            self.LOG.debug('Serial mode, sending auto baud handshake');
+            self.transport.write([0xFF, 0xFF, 0xFF, 0xFF, '#'])
+
+        self.LOG.debug('Set normal mode')
         self.transport.write(self._serialize_command(SAMBACommands.SET_NORMAL_MODE, arguments=[]))
         self.transport.read(2)
 
@@ -122,12 +129,51 @@ class SAMBA(object):
         return version
 
 
+    def write_block(self, address, data):
+        """Writes a block of data to the attached device.
+
+           Args:
+               address : Address to write the word at.
+               data    : Data to write.
+        """
+
+        if not self.is_usb:
+            raise NotImplementedError('XMODEM protocol not yet implemented')
+            # TODO: XMODEM
+
+        self.transport.write(self._serialize_command(SAMBACommands.SEND_FILE, arguments=[address, len(data)]))
+        self.transport.write(data)
+        self.LOG.debug('Write Block @ 0x%08x (%d bytes)' % (address, len(data)))
+
+
+    def read_block(self, address, length):
+        """Reads a block of data from the attached device.
+
+           Args:
+               address : Address to read the data from.
+               length  : Length of the block to read the data from.
+
+           Returns:
+               Block of data read from the attached device.
+        """
+
+        if not self.is_usb:
+            raise NotImplementedError('XMODEM protocol not yet implemented')
+            # TODO: XMODEM
+
+        self.transport.write(self._serialize_command(SAMBACommands.RECEIVE_FILE, arguments=[address, length]))
+        data = self.transport.read()
+
+        self.LOG.debug('Read Block @ 0x%08x (%d bytes)' % (address, length))
+        return word
+
+
     def write_word(self, address, word):
         """Writes a 32-bit word of data to the attached device.
 
            Args:
                address : Address to write the word at.
-               word    : 32-bit word of data to write
+               word    : 32-bit word of data to write.
         """
 
         self.transport.write(self._serialize_command(SAMBACommands.WRITE_WORD, arguments=[address, word]))
@@ -156,7 +202,7 @@ class SAMBA(object):
 
            Args:
                address   : Address to write the half-word at.
-               half_word : 16-bit half-word of data to write
+               half_word : 16-bit half-word of data to write.
         """
 
         self.transport.write(self._serialize_command(SAMBACommands.WRITE_HALF_WORD, arguments=[address, half_word]))
@@ -185,7 +231,7 @@ class SAMBA(object):
 
            Args:
                address : Address to write the byte at.
-               byte    : Byte of data to write
+               byte    : Byte of data to write.
         """
 
         self.transport.write(self._serialize_command(SAMBACommands.WRITE_BYTE, arguments=[address, byte]))
