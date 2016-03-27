@@ -77,6 +77,7 @@ class XMODEM(Transport.TransportBase):
             Returns:
                 Byte array of the received data.
         """
+
         data = io.BytesIO()
         self.xmodem.recv(data, crc_mode=1)
         return [ord(b) if isinstance(b, str) else b for b in data.getvalue()]
@@ -89,4 +90,8 @@ class XMODEM(Transport.TransportBase):
                 data : Bytes to write.
         """
 
-        self.xmodem.send(io.BytesIO(bytes(data)))
+        data = bytearray(data)
+        data.extend([255] * (128 - len(data)))
+
+        packet = io.BytesIO(data)
+        self.xmodem.send(packet)

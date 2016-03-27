@@ -30,7 +30,12 @@ class Serial(Transport.TransportBase):
             self.LOG.fatal('Could not import pyserial library. Is it installed?')
             raise e
 
-        self.serialport = serial.Serial(port, baudrate=baud, timeout=1)
+        self.serialport = serial.Serial(port=port,
+                                        baudrate=baud,
+                                        parity=serial.PARITY_NONE,
+                                        stopbits=serial.STOPBITS_ONE,
+                                        bytesize=serial.EIGHTBITS,
+                                        timeout=1)
 
 
     def __del__(self):
@@ -77,7 +82,7 @@ class Serial(Transport.TransportBase):
         if len(data) != length:
             raise Transport.TimeoutError()
 
-        self.LOG.debug('Receive %s' % [b for b in data])
+        self.LOG.debug('Receive %d bytes %s' % (len(data), [b for b in data]))
 
         return bytearray(data)
 
@@ -89,6 +94,6 @@ class Serial(Transport.TransportBase):
                 data : Bytes to write.
         """
 
-        self.LOG.debug('Send %s' % [b for b in data])
+        self.LOG.debug('Send %d bytes: %s' % (len(data), [b for b in data]))
 
         self.serialport.write(self._to_byte_array(data))

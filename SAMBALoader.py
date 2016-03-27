@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
     try:
         transport = SAMBALoader.Transports.Serial(port=serial_device)
-        samba     = SAMBALoader.SAMBA(transport)
+        samba     = SAMBALoader.SAMBA(transport, is_usb=False)
         session   = Session(samba)
 
         print('SAMBA Version: %s' % samba.get_version())

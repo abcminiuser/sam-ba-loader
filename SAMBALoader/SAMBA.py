@@ -137,12 +137,13 @@ class SAMBA(object):
                data    : Data to write.
         """
 
+        self.LOG.debug('Write Block @ 0x%08x (%d bytes)' % (address, len(data)))
+
         self.transport.write(self._serialize_command(SAMBACommands.SEND_FILE, arguments=[address, len(data)]))
         if not self.is_usb:
             Transports.XMODEM(self.transport).write(data)
         else:
             self.transport.write(data)
-        self.LOG.debug('Write Block @ 0x%08x (%d bytes)' % (address, len(data)))
 
 
     def read_block(self, address, length):
@@ -156,13 +157,14 @@ class SAMBA(object):
                Block of data read from the attached device.
         """
 
+        self.LOG.debug('Read Block @ 0x%08x (%d bytes)' % (address, length))
+
         self.transport.write(self._serialize_command(SAMBACommands.RECEIVE_FILE, arguments=[address, length]))
         if not self.is_usb:
             data = Transports.XMODEM(self.transport).read(length)
         else:
             data = self.transport.read(length)
 
-        self.LOG.debug('Read Block @ 0x%08x (%d bytes)' % (address, length))
         return data
 
 
