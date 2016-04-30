@@ -18,16 +18,19 @@ except NameError:
 
 
 class NVMCTRL(FlashController.FlashControllerBase):
-    CMDA_OFFSET      = 0x0000
+    CTRLA_OFFSET     = 0x0000
+    CTRLB_OFFSET     = 0x0004
     PARAM_OFFSET     = 0x0008
     STATUS_OFFSET    = 0x0018
     INTFLAG_OFFSET   = 0x0014
     ADDRESS_OFFSET   = 0x001C
 
+    CTRLB_MANW       = (1 << 7)
+
     INTFLAG_READY    = (1 << 0)
     INTFLAG_ERROR    = (1 << 1)
 
-    CMDA_COMMANDS    = {
+    CTRLA_CMDA       = {
         'ER'  : 0x02,
         'WP'  : 0x04,
         'PBC' : 0x44,
@@ -79,13 +82,13 @@ class NVMCTRL(FlashController.FlashControllerBase):
 
            Args:
               samba   : Core `SAMBA` instance bound to the device.
-              command : Command value to issue (see `CMDA_COMMANDS`)
+              command : Command value to issue (see `CTRLA_CMDA`)
         """
 
         self._wait_while_busy(samba)
 
         reg  = (0xA5 << 8) | command
-        samba.write_half_word(self.base_address + self.CMDA_OFFSET, reg)
+        samba.write_half_word(self.base_address + self.CTRLA_OFFSET, reg)
 
 
     def erase_flash(self, samba, start_address, end_address=None):
@@ -109,7 +112,7 @@ class NVMCTRL(FlashController.FlashControllerBase):
         for offset in xrange(start_address, end_address, self.PAGES_PER_ROW * self.page_size):
             samba.write_word(self.base_address + self.ADDRESS_OFFSET, offset >> 1)
 
-            self._command(samba, self.CMDA_COMMANDS['ER'])
+            self._command(samba, self.CTRLA_CMDA['ER'])
             self._wait_while_busy(samba)
 
 
@@ -124,20 +127,18 @@ class NVMCTRL(FlashController.FlashControllerBase):
 
         self._get_nvm_params(samba)
 
-        self._command(samba, self.CMDA_COMMANDS['PBC'])
+        samba.write_word(self.base_address + self.CTRLB_OFFSET, self.CTRLB_MANW)
+
+        self._command(samba, self.CTRLA_CMDA['PBC'])
         self._wait_while_busy(samba)
 
-        for offset in xrange(0, len(data), 4):
-            word = sum([x << (8 * i) for i, x in enumerate(data[offset : offset + 4])])
-            samba.write_word(address + offset, word)
+        for (chunk_address, chunk_data) in self._chunk(self.page_size, address, data):
+            for offset in xrange(0, len(chunk_data), 4):
+                word = sum([x << (8 * i) for i, x in enumerate(chunk_data[offset : offset + 4])])
+                samba.write_word(chunk_address + offset, word)
 
-            if offset and offset % self.page_size == 0:
-                self._wait_while_busy(samba)
-
-        if (address + len(data)) % self.page_size != 0:
-            self._command(samba, self.CMDA_COMMANDS['WP'])
-
-        self._wait_while_busy(samba)
+            self._command(samba, self.CTRLA_CMDA['WP'])
+            self._wait_while_busy(samba)
 
 
     def verify_flash(self, samba, address, data):
@@ -154,14 +155,15 @@ class NVMCTRL(FlashController.FlashControllerBase):
                tuple of the first mismatch.
         """
 
-        actual_data = self.read_flash(samba, address, len(data))
+        for (chunk_address, chunk_data) in self._chunk(self.page_size, address, data):
+            actual_data = samba.read_block(chunk_address, len(chunk_data))
 
-        for offset in xrange(0, len(data), 4):
-            expected_word = sum([x << (8 * i) for i, x in enumerate(actual_data[offset : offset + 4])])
-            actual_word   = sum([x << (8 * i) for i, x in enumerate(data[offset : offset + 4])])
+            for offset in xrange(0, len(chunk_data), 4):
+                expected_word = sum([x << (8 * i) for i, x in enumerate(chunk_data[offset : offset + 4])])
+                actual_word   = sum([x << (8 * i) for i, x in enumerate(actual_data[offset : offset + 4])])
 
-            if actual_word != expected_word:
-                return (address + offset, actual_word, expected_word)
+                if actual_word != expected_word:
+                    return (chunk_address + offset, actual_word, expected_word)
 
         return None
 

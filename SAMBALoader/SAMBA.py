@@ -48,7 +48,7 @@ class SAMBA(object):
         self.is_usb = is_usb
 
         if not self.is_usb:
-            self.LOG.debug('Serial mode, sending auto baud handshake');
+            self.LOG.debug('Serial mode, sending auto baud handshake')
             self.transport.write([0xFF, 0xFF, 0xFF, 0xFF, '#'])
 
         self.LOG.debug('Set normal mode')

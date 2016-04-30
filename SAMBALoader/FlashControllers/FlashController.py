@@ -22,6 +22,36 @@ class FlashControllerBase(object):
     LOG = logging.getLogger(__name__)
 
 
+    @staticmethod
+    def _chunk(flash_page_size, address, data):
+        """Helper method for subclasses; chunks the given data into flash pages,
+           aligned to single flash pages within the target's address space.
+
+           Args:
+              flash_page_size : Size of each flash page in the target device.
+              address         : Start address of the data to write to.
+              data            : Data to be written to the target device.
+
+           Returns:
+              Generator of (address, chunk) tuples for each chunk of data to
+              write.
+        """
+
+        chunk = []
+
+        for offset in xrange(len(data)):
+            if offset and (address + offset) % flash_page_size == 0:
+                yield (address, chunk)
+
+                address += flash_page_size
+                chunk = []
+
+            chunk.append(data[offset])
+
+        if len(chunk):
+            yield (address, chunk)
+
+
     @abc.abstractmethod
     def erase_flash(self, samba, start_address, end_address=None):
         """Erases the device's application area in the specified region.
