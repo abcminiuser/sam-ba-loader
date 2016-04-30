@@ -79,7 +79,7 @@ class Session(object):
         file_data   = file_format.read(filename)
 
         verify_failure = self.part.verify_flash(self.samba, data=file_data)
-        if not verify_failure is None:
+        if verify_failure is not None:
             raise SessionError('Verification failure @ 0x%08x: 0x%08x != 0x%08x' % verify_failure)
 
 
