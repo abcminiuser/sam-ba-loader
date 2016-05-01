@@ -9,4 +9,5 @@
 # Released under a MIT license, see LICENCE.txt.
 
 from .FlashController import *
+from .EFC import *
 from .NVMCTRL import *

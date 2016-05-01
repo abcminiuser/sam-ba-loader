@@ -12,21 +12,20 @@ from . import Part
 from .. import FlashControllers
 
 
-class CortexM0p(Part.PartBase):
-    """Common part implementation for the Cortex M0+ family devices."""
+class CortexM7(Part.PartBase):
+    """Common part implementation for the Cortex M7 family devices."""
 
-    FLASH_CONTROLLER   = FlashControllers.NVMCTRL(base_address=0x41004000)
+    FLASH_CONTROLLER   = FlashControllers.EFC(base_address=0x400E0C00)
 
-    BOOTLOADER_SIZE    = 2048
-    FLASH_BASE_ADDRESS = 0x00000000
-    FLASH_APP_ADDRESS  = FLASH_BASE_ADDRESS + BOOTLOADER_SIZE
+    FLASH_BASE_ADDRESS = 0x00400000
+    FLASH_APP_ADDRESS  = FLASH_BASE_ADDRESS
 
 
     def get_name(self):
         """Retrieves the part name as a string. This extracts out the actual
            class name of the sub-classed parts, on the assumption that all
            subclasses of this class will be a specific SAM sub-family (e.g.
-           SAMD20J).
+           SAMV).
 
            Returns:
                Name of the SAM part, as a string.

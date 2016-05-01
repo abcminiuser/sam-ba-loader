@@ -13,3 +13,5 @@ from .CortexM0p import *
 from .SAMC import *
 from .SAMD import *
 from .SAML import *
+from .CortexM7 import *
+from .SAMV import *

@@ -57,14 +57,27 @@ class PartLibrary(object):
         identifiers['CPUID'] = ChipIdentifiers.CPUID(base_address=0xE000ED00)
         identifiers['CPUID'].read(samba)
 
+        # Check if we have a known (named) part architecture (e.g. Cortex-M0+)
         if identifiers['CPUID'].part in identifiers['CPUID'].PART:
-            # Cortex-M0 devices have a DSU for additional information, others use a CHIPID
-            if 'M0' in identifiers['CPUID'].PART[identifiers['CPUID'].part]:
+            cpuid_part = identifiers['CPUID'].PART[identifiers['CPUID'].part]
+
+            if 'M0' in cpuid_part:
+                # Cortex-M0 devices have a DSU for additional information
                 identifiers['DSU'] = ChipIdentifiers.DSU(base_address=0x41002000)
                 identifiers['DSU'].read(samba)
             else:
-                identifiers['CHIPID'] = ChipIdentifiers.CHIPID(base_address=0x400E0940)
-                identifiers['CHIPID'].read(samba)
+                # There are multiple CHIPID locations among various other chips,
+                # try them in sequence until we hit one that's likely to be
+                # correct
+                potential_chipid_addresses = [0x400E0740, 0x400E0940]
+
+                for baseaddress in potential_chipid_addresses:
+                    identifiers['CHIPID'] = ChipIdentifiers.CHIPID(base_address=baseaddress)
+                    identifiers['CHIPID'].read(samba)
+
+                    # Check if the CHIPID processor type matches the CPUID part
+                    if cpuid_part == identifiers['CHIPID'].PROCESSOR[identifiers['CHIPID'].processor]:
+                        break
 
         return identifiers
 
