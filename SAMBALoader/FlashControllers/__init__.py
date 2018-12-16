@@ -10,3 +10,4 @@
 
 from .FlashController import *
 from .NVMCTRL import *
+from .EefcFlash import *

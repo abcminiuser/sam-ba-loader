@@ -13,22 +13,25 @@ import logging
 
 
 class ChipIdentifierBase(object):
-    """Base class for SAM chip identification modules. Derived instances should
-       override all methods listed here.
-    """
+	"""Base class for SAM chip identification modules. Derived instances should
+		override all methods listed here.
+	"""
 
-    __metaclass__ = abc.ABCMeta
+	__metaclass__ = abc.ABCMeta
 
-    LOG = logging.getLogger(__name__)
+	LOG = logging.getLogger(__name__)
 
 
-    @abc.abstractmethod
-    def read(self, samba):
-        """Reads and parses the chip identification values from the attached
-           device. Parsed values are then stored in the class instance, and can
-           be extracted later for matching against a specific device.
+	@abc.abstractmethod
+	def read(self, samba):
+		"""Reads and parses the chip identification values from the attached
+		   device. Parsed values are then stored in the class instance, and can
+		   be extracted later for matching against a specific device.
 
-           Args:
-              samba : Core `SAMBA` instance bound to the device.
-        """
-        pass
+		Args:
+			samba -- Core `SAMBA` instance bound to the device.
+
+		Returns:
+			True - success; False - wrong register value was read
+		"""
+		pass

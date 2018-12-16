@@ -1,0 +1,24 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Python: Current File (Integrated Terminal)",
+			"type": "python",
+			"request": "launch",
+			"program": "${file}",
+			"console": "integratedTerminal",
+			"args": [
+				// "-vv",
+				"--addresses", "CPUID=0xE000ED00,CHIPID=0x400E0740",
+				// "parts",
+				"info",
+				// "read", "-f", "read.bin",
+				// "write", "-f", "1.bin"
+				// "erase", "-a", "0x480000",
+			]
+		},
+	]
+}
