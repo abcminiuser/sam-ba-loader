@@ -15,6 +15,11 @@ import sys
 from datetime import datetime
 import logging
 import argparse
+try:
+	xrange
+except NameError:
+	# Remap xrange to range for Python 3
+	xrange = range
 import SAMBALoader
 import SAMBALoader.Transports
 from SAMBALoader.FileFormats import BinFormat
@@ -159,7 +164,7 @@ def args_parse():
 		help='start address. Default: flash start. Example: 0x400000 or 4M')
 	parser_write.add_argument('-l', metavar='DEC_HEX', help='length. Example: 0x100 or 256 or 1k or 1M')
 	parser_write.add_argument('-f', required=True, metavar='FILE_PATH', \
-		help='file to write from, explicit. Example: {}1.bin'.format('C:\\' if sys.platform.startswith('win') else '~/'))
+		help='file to write from, explicit. Example: {0}1.bin or {0}1.hex'.format('C:\\' if sys.platform.startswith('win') else '~/'))
 	parser_read = subparsers.add_parser('erase', help='Erase flash plane or entire chip')
 	parser_read.add_argument('-a', metavar='DEC_HEX', \
 		help='flash plane address. Default: entire chip. Example: 0x400000 or 4M')
@@ -267,7 +272,7 @@ if __name__ == '__main__':
 				if args.file:
 					save_to_file(args.file, buff)
 				else:
-					print(buff)
+					print(buff.decode('ascii', 'replace'))
 
 			elif args.cmd == 'write':
 				data = read_from_file(args.f)

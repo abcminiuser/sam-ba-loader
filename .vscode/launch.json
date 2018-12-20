@@ -11,10 +11,12 @@
 			"program": "${file}",
 			"console": "integratedTerminal",
 			"args": [
+				"-v",
 				// "-vv",
-				"--addresses", "CPUID=0xE000ED00,CHIPID=0x400E0740",
+				// "--addresses", "CPUID=0xE000ED00,CHIPID=0x400E0740",
 				// "parts",
-				"info",
+				// "info",
+				"read", //"-l", "1k",
 				// "read", "-f", "read.bin",
 				// "write", "-f", "1.bin"
 				// "erase", "-a", "0x480000",

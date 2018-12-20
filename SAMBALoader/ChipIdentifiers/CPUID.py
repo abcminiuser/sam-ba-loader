@@ -29,6 +29,7 @@ class CPUID(ChipIdentifier.ChipIdentifierBase):
 	PART = {
 		0xC20 : "Cortex-M0",
 		0xC21 : "Cortex-M1",
+		0xC23 : "Cortex-M3",
 		0xC24 : "Cortex-M3/Cortex-M4",
 		0xC27 : "Cortex-M7",
 		0xC60 : "Cortex-M0+",

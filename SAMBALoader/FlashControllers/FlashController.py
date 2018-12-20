@@ -10,6 +10,11 @@
 
 import abc
 import logging
+try:
+	xrange
+except NameError:
+	# Remap xrange to range for Python 3
+	xrange = range
 
 
 class OutOfRangeException(Exception):

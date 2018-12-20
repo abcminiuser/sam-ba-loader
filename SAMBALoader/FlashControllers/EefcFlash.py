@@ -2,6 +2,11 @@
 
 from time import time, sleep
 import logging
+try:
+	xrange
+except NameError:
+	# Remap xrange to range for Python 3
+	xrange = range
 from . import FlashController
 
 
@@ -55,7 +60,7 @@ class Flash(FlashController.FlashControllerBase):
 	LOG = logging.getLogger(__name__)
 
 
-	def __init__(self, samba, flash_base_address, regs_base_address, pages, page_size):
+	def __init__(self, samba, flash_base_address, regs_base_address, pages, page_size, dont_use_read_block=False):
 		"""Initializes a Enhanced Embedded Flash Controller (EEFC) instance.
 
 		Args:
@@ -64,13 +69,15 @@ class Flash(FlashController.FlashControllerBase):
 			regs_base_address  -- Absolute base address of the flash control registers
 			pages              -- Pages count
 			page_size          -- Page size, bytes
+			dont_use_read_block-- SAM3 bugfix: all 0 reads when SAMBA read_block
 		"""
 
 		self.samba = samba
 		self.flash_address_range = FlashController.AddressRange(flash_base_address, pages * page_size, page_size)
 		self.regs_base_address = regs_base_address
-		# SAM3 bug
+		# SAM3 bugfux
 		samba.write_word(self.regs_base_address + self.FMR_OFFSET, 0x6 << 8)
+		self.dont_use_read_block = dont_use_read_block
 
 
 	def _wait_while_busy(self, timeout=2):
@@ -114,9 +121,35 @@ class Flash(FlashController.FlashControllerBase):
 		self.LOG.info('EEFC_FCR @ 0x{:08X} = 0x{:08X}'.format(self.regs_base_address + self.FCR_OFFSET, reg))
 		self.samba.write_word(self.regs_base_address + self.FCR_OFFSET, reg)
 		# check for error
-		reg = self.samba.read_word(self.regs_base_address + self.FSR_OFFSET) & ~self.FSR_MASK['FRDY']
+		reg = self.samba.read_word(self.regs_base_address + self.FSR_OFFSET) & ~self.FSR_MASK['FRDY'] & 0xF
 		if reg:
 			raise CommandException(self.regs_base_address + self.FSR_OFFSET, reg)
+
+
+	def _read_block(self, address, length):
+		"SAM3 bugfux: all 0 reads when SAMBA read_block"
+		if self.dont_use_read_block:
+			return self._read_by_word(address, length)
+		else:
+			return self.samba.read_block(address, length)
+
+
+	def _read_by_word(self, address, length):
+		def append_bytes(offset_byte, length=None):
+			if length is None:
+				length = 4 - offset_byte % 4
+			for i in xrange(offset_byte, offset_byte + length):
+				ret.append(buff >> i * 8 & 0xFF)
+		ret = bytearray()
+		if address % 4 != 0:
+			buff = self.samba.read_word(address - address % 4)
+			append_bytes(address % 4, min(4 - address % 4, length))
+			length -= 4 - address % 4
+			address += 4 - address % 4
+		for i in xrange(address, address + length, 4):
+			buff = self.samba.read_word(i)
+			append_bytes(0, min(address + length - i, 4))
+		return ret
 
 
 	def read_gpnvm(self):
@@ -161,8 +194,8 @@ class Flash(FlashController.FlashControllerBase):
 	def read_unique_identifier_area(self):
 		"Reads unique identifier area as bytearray"
 		self._command('STUI')
-		# self._wait_while_busy()
-		ret = self.samba.read_block(self.flash_address_range.start, 16)
+		# self._wait_while_busy() # The FRDY flag is not set when the STUI command is achieved
+		ret = self._read_block(self.flash_address_range.start, 16)
 		self._command('SPUI', do_not_wait=True)
 		return ret
 
@@ -174,9 +207,9 @@ class Flash(FlashController.FlashControllerBase):
 			flash controller info as text.
 		"""
 		ret = 'Flash info\n'
-		ret += 'GPNVM bits: ' + str(self.read_gpnvm()) + '\n'
-		ret += 'Unique identifier area: ' + str(self.read_unique_identifier_area()) + '\n'
-		ret += 'Descriptor: ' + str(self.read_descriptor()) + '\n'
+		ret += '\tGPNVM bits: ' + str(self.read_gpnvm()) + '\n'
+		ret += '\tUnique identifier area: ' + self.read_unique_identifier_area().decode('ascii', 'replace') + '\n'
+		ret += '\tDescriptor: ' + str(self.read_descriptor()) + '\n'
 		return ret
 
 
@@ -202,7 +235,7 @@ class Flash(FlashController.FlashControllerBase):
 			raise OutOfRangeException(self.flash_address_range, address)
 
 		self.LOG.info('Flash read: '+str(FlashController.AddressRange(address, length)))
-		ret = self.samba.read_block(address, length)
+		ret = self._read_block(address, length)
 
 		return ret
 
@@ -231,7 +264,7 @@ class Flash(FlashController.FlashControllerBase):
 		for (chunk_address, chunk_data) in self._chunk(self.flash_address_range.page_size, address, data):
 			# write to page
 			self.LOG.debug('Flash read & compare: '+str(FlashController.AddressRange(chunk_address, len(chunk_data))))
-			buff = self.samba.read_block(chunk_address, len(chunk_data))
+			buff = self._read_block(chunk_address, len(chunk_data))
 			if self._is_equal(chunk_data, buff):
 				self.LOG.info('Flash compare: equals, not need to write: '+str(FlashController.AddressRange(chunk_address, len(chunk_data))))
 			else:
@@ -247,13 +280,13 @@ class Flash(FlashController.FlashControllerBase):
 				if chunk_address % align_bytes != 0:
 					# start of chunk data not aligned # add bytes to chunk data
 					new_address = chunk_address - chunk_address % align_bytes
-					buff = self.samba.read_block(new_address, chunk_address % align_bytes)
+					buff = self._read_block(new_address, chunk_address % align_bytes)
 					chunk_data = list(buff) + chunk_data
 					chunk_address = new_address
 				# now chunk_address is aligned
 				if len(chunk_data) % align_bytes != 0:
 					# end of chunk data not aligned
-					buff = self.samba.read_block(chunk_address + len(chunk_data), align_bytes - len(chunk_data) % align_bytes)
+					buff = self._read_block(chunk_address + len(chunk_data), align_bytes - len(chunk_data) % align_bytes)
 					chunk_data += list(buff)
 				# now chunk_address & chunk_data is aligned
 				# write to page buffer with 32 bit words

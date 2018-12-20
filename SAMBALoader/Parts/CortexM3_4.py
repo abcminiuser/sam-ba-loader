@@ -5,7 +5,7 @@ from . import Part
 from .. import FlashControllers
 
 
-class CortexM4(Part.PartBase):
+class CortexM3_4(Part.PartBase):
 	"""Common part implementation for the Cortex M4 family devices.
 	
 	It's expected to inheritors to set the variables:
@@ -28,7 +28,7 @@ class CortexM4(Part.PartBase):
 		Returns:
 			Name of the SAM part, as a string (empty string for base classes).
 		"""
-		return '' if cls is CortexM4 else cls.__name__
+		return '' if cls is CortexM3_4 else cls.__name__
 
 
 	@staticmethod

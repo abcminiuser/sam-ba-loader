@@ -1,11 +1,11 @@
 
 from . import Part
-from . import CortexM4
+from . import CortexM3_4
 from ..FlashControllers import EefcFlash, AddressRange
 from ..Peripheral import RSTC
 
 
-class SAM4S(CortexM4):
+class SAM4S(CortexM3_4):
 	"""Base part class for SAM4S series."""
 
 
@@ -16,8 +16,8 @@ class SAM4S(CortexM4):
 			flash_planes       -- flash planes & controllers count: 1 or 2
 			flash_total_length -- total flash length, kBytes
 		"""
-		CortexM4.__init__(self, samba)
-		self.flash_address_range = AddressRange(0x00400000, flash_total_length * 1024, (flash_total_length * 1024) / flash_planes)
+		CortexM3_4.__init__(self, samba)
+		self.flash_address_range = AddressRange(0x00400000, flash_total_length * 1024, int((flash_total_length * 1024) / flash_planes))
 		if flash_planes == 1:
 			self.flash_controllers = (
 				EefcFlash.Flash(self.samba, 0x00400000, 0x400E0A00, flash_total_length * 2, 512),
@@ -25,7 +25,7 @@ class SAM4S(CortexM4):
 		else:
 			self.flash_controllers = (
 				EefcFlash.Flash(self.samba, 0x00400000, 0x400E0A00, flash_total_length, 512),
-				EefcFlash.Flash(self.samba, 0x00480000, 0x400E0C00, flash_total_length, 512),
+				EefcFlash.Flash(self.samba, 0x00400000 + flash_total_length * 512, 0x400E0C00, flash_total_length, 512),
 				)
 		self.reset_controller = RSTC(samba, 0x400E1400)
 
