@@ -5,20 +5,21 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Python: Current File (Integrated Terminal)",
+			"name": "Python: SAMBALoader.py (Integrated Terminal)",
 			"type": "python",
 			"request": "launch",
-			"program": "${file}",
+			"program": "${workspaceRoot}/SAMBALoader.py",
 			"console": "integratedTerminal",
 			"args": [
 				"-v",
 				// "-vv",
+				"--autoconnect",
 				// "--addresses", "CPUID=0xE000ED00,CHIPID=0x400E0740",
 				// "parts",
 				// "info",
-				"read", //"-l", "1k",
+				// "read", //"-l", "1k",
 				// "read", "-f", "read.bin",
-				// "write", "-f", "1.bin"
+				"write", "-f", "/home/vika/eclipse-workspace/hb_firmware_factory_tests/Standalone_2.5/hb_firmware_factory_tests.hex",
 				// "erase", "-a", "0x480000",
 			]
 		},

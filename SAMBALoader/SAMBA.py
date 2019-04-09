@@ -121,9 +121,13 @@ class SAMBA(object):
 		version = bytearray()
 		while not b'\n\r' in version:
 			version += self.transport.read(1)
-		version = version.decode('ascii').strip()
+		try:
+			version = version.decode('ascii').strip()
+		except:
+			raise Exception('Error connection')
+		else:
+			self.LOG.debug('Read Version = %s' % version)
 
-		self.LOG.debug('Read Version = %s' % version)
 		return version
 
 

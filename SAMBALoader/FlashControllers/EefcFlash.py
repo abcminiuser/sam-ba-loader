@@ -293,7 +293,7 @@ class Flash(FlashController.FlashControllerBase):
 				for i in xrange(0, len(chunk_data), 4):
 					buff = chunk_data[i] | chunk_data[i + 1] << 8 | chunk_data[i + 2] << 16 | chunk_data[i + 3] << 24
 					self.samba.write_word(chunk_address + i, buff)
-				self._command('EWP' if need_erase else 'WP', chunk_address / self.flash_address_range.page_size)
+				self._command('EWP' if need_erase else 'WP', chunk_address // self.flash_address_range.page_size)
 				self._wait_while_busy()
 				# check the chunk
 				if not self.verify_flash(chunk_data, chunk_address):

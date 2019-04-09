@@ -49,7 +49,7 @@ class AddressRange():
 	@property
 	def pages_count(self):
 		try:
-			return self.length / self.page_size
+			return self.length // self.page_size
 		except:
 			raise Exception('Flash hasn''t pages')
 

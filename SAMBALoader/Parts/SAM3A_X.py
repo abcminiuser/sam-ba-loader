@@ -17,7 +17,7 @@ class SAM3X(CortexM3_4):
 			flash_total_length -- total flash length, kBytes
 		"""
 		CortexM3_4.__init__(self, samba)
-		self.flash_address_range = AddressRange(0x00080000, flash_total_length * 1024, int((flash_total_length * 1024) / flash_planes))
+		self.flash_address_range = AddressRange(0x00080000, flash_total_length * 1024, int((flash_total_length * 1024) // flash_planes))
 		if flash_planes == 1:
 			self.flash_controllers = (
 				EefcFlash.Flash(self.samba, 0x00080000, 0x400E0A00, flash_total_length * 4, 256, dont_use_read_block=True),

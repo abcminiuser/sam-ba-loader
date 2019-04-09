@@ -11,9 +11,7 @@ Requires Python 2.7 or 3.x. So Linux, Win and Mac OSs working supported.
 
 From a fresh Python install, use:
 ```
-pip install pyserial
-pip install xmodem
-pip install IntelHex
+pip install argparse pyserial xmodem IntelHex
 ```
 Before running the tool for the first time to install the required libraries.
 
@@ -63,11 +61,12 @@ SAM-BA Loader can be used as full featured command line tool or Python API.
 
 ### 3.1 Command line tool: help, programm & erase
 
-Command line help example (Linux serial port names are shown):
+***Command line help example (Linux serial port names are shown):***
 ```
 python SAMBALoader.py -h
-usage: SAMBALoader.py [-h] [-v] [-p PORT] [--addresses NAME=ADDRESS,..]
-                      [--flash-boot] [--reset]
+usage: SAMBALoader.py [-h] [-v] [-p PORT] [--autoconnect]
+                      [--autoconnect-vidpid VID:PID]
+                      [--addresses NAME=ADDRESS,..] [--flash-boot] [--reset]
                       {parts,info,read,write,erase} ...
 
 Atmel SAM-BA client tool
@@ -85,16 +84,19 @@ optional arguments:
   -h, --help            show this help message and exit
   -v                    verbose level: -v, -vv
   -p PORT, --port PORT  port; example: 0, ttyACM0, /dev/ttyACM0
+  --autoconnect         autoconnect to device, see --autoconnect-vidpid
+  --autoconnect-vidpid VID:PID
+                        VendorID:ProductID; default: 03eb:6124
   --addresses NAME=ADDRESS,..
                         special identifier register addresses; example:
                         CPUID=0xE000ED00,CHIPID=0x400E0740
   --flash-boot          make boot from flash when work was done
   --reset               reset chip when work was done
 
-Copyright (C) Dean Camera, 2016. Victoria Danchenko, 2018.
+Copyright (C) Dean Camera, 2016. Victoria Danchenko, 2019.
 ```
 
-Programming help:
+**Programming help:**
 ```
 python SAMBALoader.py write -h
 usage: SAMBALoader.py write [-h] [-a DEC_HEX] [-l DEC_HEX] -f FILE_PATH
@@ -106,7 +108,7 @@ optional arguments:
   -f FILE_PATH  file to write from, explicit. Example: ~/1.bin or ~/1.hex
 ```
 
-Programming SAM3x8E with more verbose output (`LICENSE.txt` is for test purposes. You can program .bin or .hex files):
+**Programming SAM3x8E with more verbose output (`LICENSE.txt` is for test purposes. You can program .bin or .hex files):**
 ```
 python SAMBALoader.py -v write -f LICENSE.txt
 INFO:root:START 2018-12-18T16:10:27.684290
@@ -166,7 +168,7 @@ INFO:SAMBALoader.FlashControllers.EefcFlash:Flash read: [0x00080000..0x00080448]
 INFO:SAMBALoader.FlashControllers.EefcFlash:Flash verify: OK
 ```
 
-Programming the same file again will produce this output:
+**Programming the same file again will produce this output:**
 ```
 python SAMBALoader.py -v write -f LICENSE.txt
 INFO:root:START 2018-12-18T16:06:36.669071
@@ -201,7 +203,7 @@ INFO:SAMBALoader.FlashControllers.EefcFlash:Flash read: [0x00080000..0x00080448]
 INFO:SAMBALoader.FlashControllers.EefcFlash:Flash verify: OK
 ```
 
-Erase entire chip:
+**Erase entire chip:**
 ```
 python SAMBALoader.py -v erase
 INFO:root:START 2018-12-18T16:07:48.123647
@@ -229,8 +231,9 @@ INFO:SAMBALoader.FlashControllers.EefcFlash:EEFC_FCR @ 0x400E0C04 = 0x5A000005
 ### 3.2 Part recognizing: automatic & manual
 
 SAM-BA Loader recognize a part by read out the identification registers. First the `CPUID` register read for `PartNo` field acquiring (Part number of the processor):
+
 Registers | Series
--------|----------
+--------- | ---------
 CPUID/CHIPID | SAM3, SAM4
 CPUID/DSU | SAMC, SAMD, SAML
 

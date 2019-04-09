@@ -2,7 +2,7 @@
 
 #      Open Source SAM-BA Programmer
 #     Copyright (C) Dean Camera, 2016.
-#     Copyright (C) Victoria Danchenko, 2018.
+#     Copyright (C) Victoria Danchenko, 2019.
 #
 #  dean [at] fourwalledcubicle [dot] com
 #       www.fourwalledcubicle.com
@@ -140,11 +140,13 @@ def read_from_file(file_path):
 def args_parse():
 	parser = argparse.ArgumentParser(
 		description='Atmel SAM-BA client tool',
-		epilog='Copyright (C) Dean Camera, 2016. Victoria Danchenko, 2018.')
+		epilog='Copyright (C) Dean Camera, 2016. Victoria Danchenko, 2019.')
 	parser.add_argument('-v', action='count', default=0, help='verbose level: -v, -vv')
 	parser.add_argument('-p', '--port', \
 		default='1' if sys.platform.startswith('win') else '0', \
 		help='port; example: '+('1 or COM1' if sys.platform.startswith('win') else '0, ttyACM0, /dev/ttyACM0'))
+	parser.add_argument('--autoconnect', action='store_true', help='autoconnect to device, see --autoconnect-vidpid')
+	parser.add_argument('--autoconnect-vidpid', metavar='VID:PID', default='03eb:6124', help='VendorID:ProductID; default: 03eb:6124')
 	parser.add_argument('--addresses', metavar='NAME=ADDRESS,..', \
 		help='special identifier register addresses; example: CPUID=0xE000ED00,CHIPID=0x400E0740')
 	parser.add_argument('--flash-boot', action='store_true', help='make boot from flash when work was done')
@@ -207,14 +209,29 @@ if __name__ == '__main__':
 	logging.basicConfig(level=[ logging.WARNING, logging.INFO, logging.DEBUG ][min(args.v, 2)])
 	logging.info('START ' + datetime.now().isoformat())
 
-	if sys.platform.startswith('win'):
-		if is_int(args.port):
-			args.port = 'COM' + args.port
+	if args.autoconnect:
+		import time
+		import serial.tools.list_ports
+		def autoconnect():
+			'Waits until USB device connected'
+			vid, pid = [ int(x, 16) for x in args.autoconnect_vidpid.split(':') ]
+			while True:
+				for p in serial.tools.list_ports.comports():
+					if vid == p.vid and pid == p.pid:
+						args.port = p.device
+						logging.info('Found USB: {:04X}:{:04X} {}'.format(p.vid, p.pid, p.device))
+						return
+				time.sleep(.5)
+		autoconnect()
 	else:
-		if is_int(args.port):
-			args.port = '/dev/ttyACM' + args.port
-		elif not args.port.startswith('/'):
-			args.port = '/dev/' + args.port
+		if sys.platform.startswith('win'):
+			if is_int(args.port):
+				args.port = 'COM' + args.port
+		else:
+			if is_int(args.port):
+				args.port = '/dev/ttyACM' + args.port
+			elif not args.port.startswith('/'):
+				args.port = '/dev/' + args.port
 	# print(args)
 	# sys.exit(0)
 
