@@ -90,14 +90,14 @@ class Flash(FlashController.FlashControllerBase):
 		start_timestamp = time()
 		while self.samba.read_word(self.regs_base_address + self.FSR_OFFSET) & self.FSR_MASK['FRDY'] == 0:
 			if not printed:
-				self.LOG.info('Flash busy')
+				self.LOG.debug('Flash busy')
 				printed = True
 			if time() - start_timestamp >= timeout:
 				raise Exception('Flash busy: timeout. FSR: ' + str(self.samba.read_word(self.regs_base_address + self.FSR_OFFSET)))
 			sleep(.001)
 				
 		if printed:
-			self.LOG.info('Flash was busy for {:.3f}s'.format(time() - start_timestamp))
+			self.LOG.debug('Flash was busy for {:.3f}s'.format(time() - start_timestamp))
 
 
 	def _command(self, command='GETD', farg=0, do_not_wait=False):
@@ -118,7 +118,7 @@ class Flash(FlashController.FlashControllerBase):
 
 		reg  = self.FCR_FKEY | ((farg & 0xFFFF) << 8) | (command & 0xFF)
 		
-		self.LOG.info('EEFC_FCR @ 0x{:08X} = 0x{:08X}'.format(self.regs_base_address + self.FCR_OFFSET, reg))
+		self.LOG.debug('EEFC_FCR @ 0x{:08X} = 0x{:08X}'.format(self.regs_base_address + self.FCR_OFFSET, reg))
 		self.samba.write_word(self.regs_base_address + self.FCR_OFFSET, reg)
 		# check for error
 		reg = self.samba.read_word(self.regs_base_address + self.FSR_OFFSET) & ~self.FSR_MASK['FRDY'] & 0xF
@@ -234,7 +234,7 @@ class Flash(FlashController.FlashControllerBase):
 		if not self.flash_address_range.is_in_range(address, length):
 			raise OutOfRangeException(self.flash_address_range, address)
 
-		self.LOG.info('Flash read: '+str(FlashController.AddressRange(address, length)))
+		self.LOG.debug('Flash read: '+str(FlashController.AddressRange(address, length)))
 		ret = self._read_block(address, length)
 
 		return ret
@@ -316,11 +316,11 @@ class Flash(FlashController.FlashControllerBase):
 		"""Verifies the flash data with a reference data"""
 		if address is None:
 			address = self.flash_address_range.start
-		self.LOG.info('Flash verify: '+str(FlashController.AddressRange(address, len(data))))
+		self.LOG.debug('Flash verify: '+str(FlashController.AddressRange(address, len(data))))
 		buff = self.read_flash(address, len(data))
 		ret = self._is_equal(buff, data)
 		if ret:
-			self.LOG.info('Flash verify: OK')
+			self.LOG.info('Flash verify '+str(FlashController.AddressRange(address, len(data)))+': OK')
 		else:
-			self.LOG.error('Flash verify: FAIL')
+			self.LOG.error('Flash verify '+str(FlashController.AddressRange(address, len(data)))+': FAIL')
 		return ret
