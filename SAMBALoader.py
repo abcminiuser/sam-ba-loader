@@ -293,7 +293,30 @@ if __name__ == '__main__':
 
 			elif args.cmd == 'write':
 				data = read_from_file(args.f)
-				if not part.program_flash(data, parse_number(args.a)):
+				try:
+					result = part.program_flash(data, parse_number(args.a))
+				except SAMBALoader.Transports.TimeoutError:
+					try:
+						port_info = str(samba.transport)
+					except:
+						port_info = ''
+					else:
+						port_info = ' ({})'.format(port_info)
+					print('Error while programming{}:'.format(port_info))
+					print('Timeout happened'.format(port_info))
+					sys.exit(1)
+				except Exception as e:
+					try:
+						port_info = str(samba.transport)
+					except:
+						port_info = ''
+					else:
+						port_info = ' ({})'.format(port_info)
+					print('Error while programming{}:'.format(port_info))
+					print(e)
+					sys.exit(2)
+				if not result:
+					print('Error while programming')
 					sys.exit(2)
 
 			elif args.cmd == 'erase':

@@ -39,7 +39,8 @@ class Serial(Transport.TransportBase):
 										parity=serial.PARITY_NONE,
 										stopbits=serial.STOPBITS_ONE,
 										bytesize=serial.EIGHTBITS,
-										timeout=1)
+										timeout=1, # read timeout, s
+										write_timeout=1)
 
 		# flush input buffer
 		try:
@@ -54,6 +55,61 @@ class Serial(Transport.TransportBase):
 			self.serialport.close()
 		except:
 			pass
+
+
+	def __str__(self):
+		try:
+			return self._get_port_properties()
+		except:
+			pass
+		return ''
+
+
+	def _get_port_properties(self):
+
+		def get_bytesize():
+			if self.serialport.bytesize == serial.FIVEBITS:
+				return '5'
+			elif self.serialport.bytesize == serial.SIXBITS:
+				return '6'
+			elif self.serialport.bytesize == serial.SEVENBITS:
+				return '7'
+			return '8'
+
+		def get_parity():
+			if self.serialport.parity == serial.PARITY_NONE:
+				return 'N'
+			elif self.serialport.parity == serial.PARITY_EVEN:
+				return 'E'
+			elif self.serialport.parity == serial.PARITY_ODD:
+				return 'O'
+			elif self.serialport.parity == serial.PARITY_MARK:
+				return 'M'
+			return 'S'
+
+		def get_stopbits():
+			if self.serialport.stopbits == serial.STOPBITS_ONE:
+				return '1'
+			elif self.serialport.stopbits == serial.STOPBITS_ONE_POINT_FIVE:
+				return '1.5'
+			return '2'
+
+		try:
+			import serial
+		except:
+			pass
+		try:
+			port_name = self.serialport.port
+		except:
+			port_name = ''
+		try:
+			port_baudrate = str(self.serialport.baudrate)
+			port_baudrate += ' ' + get_bytesize() + get_parity() + get_stopbits()
+		except Exception as e:
+			port_baudrate = ''
+		else:
+			port_baudrate = ' @ ' + port_baudrate
+		return port_name + port_baudrate
 
 
 	def _to_byte_array(self, data):
