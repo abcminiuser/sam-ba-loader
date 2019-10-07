@@ -7,7 +7,7 @@ This is intended to provide an easy way to reprogram Atmel SAM devices running S
 
 ## 1. Dependencies
 
-Requires Python 2.7 or 3.x. So Linux, Win and Mac OSs working supported.
+Requires Python 3.x. So Linux, Win and Mac OSs working supported.
 
 From a fresh Python install, use:
 ```

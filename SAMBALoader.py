@@ -289,7 +289,7 @@ if __name__ == '__main__':
 				if args.file:
 					save_to_file(args.file, buff)
 				else:
-					print(buff.decode('ascii', 'replace'))
+					sys.stdout.buffer.write(buff)
 
 			elif args.cmd == 'write':
 				data = read_from_file(args.f)
