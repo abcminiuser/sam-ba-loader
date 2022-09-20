@@ -1,4 +1,6 @@
 # Python SAM-BA Loader
+**Improved python 3 version with new SAM devices and CLI support**
+_____________________________________________________
 
 This is an implementation of a SAM-BA client for Atmel SAM devices (such as
 the ATSAMD20J18A) that run either a ROM implementation of the Atmel SAM-BA bootloader, or a pre-programmed SAM-BA bootloader written to flash.
