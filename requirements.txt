@@ -1,0 +1,4 @@
+argparse>=1.4.0
+pyserial>=3.5
+xmodem>=0.4.6
+IntelHex>=2.3.0

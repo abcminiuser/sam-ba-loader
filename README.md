@@ -1,5 +1,4 @@
 # Python SAM-BA Loader
-**Improved python 3 version with new SAM devices and CLI support**
 _____________________________________________________
 
 This is an implementation of a SAM-BA client for Atmel SAM devices (such as
@@ -7,15 +6,16 @@ the ATSAMD20J18A) that run either a ROM implementation of the Atmel SAM-BA bootl
 
 This is intended to provide an easy way to reprogram Atmel SAM devices running SAM-BA without having to use the official Atmel client (which is complex, as it is aimed primarily at the Atmel MPUs rather than MCUs). It is similar in aim to the [BOSSA](http://www.shumatech.com/web/products/bossa) software, except this client should be more generic and support a wider range of Atmel devices.
 
+
 ## 1. Dependencies
 
-Requires Python 3.x. So Linux, Win and Mac OSs working supported.
+Requires Python 3.x (Linux, Windows and MacOS).
 
-From a fresh Python install, use:
+Before running the tool for the first time, install all the required dependencies via:
 ```
-pip install argparse pyserial xmodem IntelHex
+pip install -r requirements.txt
 ```
-Before running the tool for the first time to install the required libraries.
+
 
 ## 2. Status
 
@@ -57,11 +57,12 @@ The SAM C, D and L series with NVMCTRL Flash controller are currently supported.
 
 Also, some peripheral will supported as Reset Controller (RSTC). And this list of supported peripheral can be expanded as needed to working with connected chip by SAM-BA without writing any C/C++ code, compiling and flashing. You can add a new periphery in `SAMBALoader/Peripheral` folder and use it to test Your electrical schematic using SAM-BA feature just from PC.
 
+
 ## 3. Usage
 
 SAM-BA Loader can be used as full featured command line tool or Python API.
 
-### 3.1 Command line tool: help, programm & erase
+### 3.1 Command line tool: help, program and erase
 
 ***Command line help example (Linux serial port names are shown):***
 ```
@@ -328,6 +329,12 @@ if len(matched_parts) == 1:
 	part.program_flash(data, address) # or .part.program_flash(data) if programming from flash start address
 ```
 
-## 4. License
 
-Released under a MIT license, see README.txt.
+## 4. Credits:
+
+Enormous thanks to [iddq](https://github.com/iddq) for their large contribution, adding new part support and various features to the CLI.
+
+
+## 5. License
+
+Released under the [MIT license](LICENSE).
