@@ -1,12 +1,10 @@
 #
 #      Open Source SAM-BA Programmer
-#     Copyright (C) Dean Camera, 2016.
+#      Released under the MIT license
 #
-#  dean [at] fourwalledcubicle [dot] com
-#       www.fourwalledcubicle.com
+#   dean [at] fourwalledcubicle [dot] com
+#         www.fourwalledcubicle.com
 #
-#
-# Released under a MIT license, see LICENCE.txt.
 
 import abc
 import logging
@@ -69,7 +67,7 @@ class PartBase(object):
 	@abc.abstractmethod
 	def get_info(self):
 		"""Read special registers. This varying for different flash controllers.
-		
+
 		Returns:
 			part info as text.
 		"""
@@ -79,7 +77,7 @@ class PartBase(object):
 	@abc.abstractmethod
 	def set_flash_boot(self):
 		"""Sets the device boot from a flash.
-		
+
 		May raise exceptions:
 			CantSetFlashBoot
 		"""

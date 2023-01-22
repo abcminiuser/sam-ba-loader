@@ -7,7 +7,7 @@ from .. import FlashControllers
 
 class CortexM3_4(Part.PartBase):
 	"""Common part implementation for the Cortex M4 family devices.
-	
+
 	It's expected to inheritors to set the variables:
 	self.flash_address_range as AddressRange -- entire flash address region
 	self.flash_controllers as list of FlashControllerBase -- flash planes with each own controller
@@ -49,7 +49,7 @@ class CortexM3_4(Part.PartBase):
 
 	def get_info(self):
 		"""Read special registers.
-		
+
 		Returns:
 			part info as text.
 		"""

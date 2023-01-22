@@ -1,25 +1,16 @@
 #
 #      Open Source SAM-BA Programmer
-#     Copyright (C) Dean Camera, 2016.
+#      Released under the MIT license
 #
-#  dean [at] fourwalledcubicle [dot] com
-#       www.fourwalledcubicle.com
+#   dean [at] fourwalledcubicle [dot] com
+#         www.fourwalledcubicle.com
 #
-#
-# Released under a MIT license, see LICENCE.txt.
 
 import abc
 import logging
-try:
-	xrange
-except NameError:
-	# Remap xrange to range for Python 3
-	xrange = range
 
 
 class OutOfRangeException(Exception):
-
-
 	def __init__(self, flash_address_range, address, length=None):
 		self.address, self.length = address, length
 		self.flash_address_range = flash_address_range
@@ -35,8 +26,6 @@ class OutOfRangeException(Exception):
 
 
 class AddressRange():
-
-
 	def __init__(self, start, length, page_size=None):
 		self.start, self.length = start, length
 		self.page_size = page_size
@@ -73,7 +62,7 @@ class AddressRange():
 		Args:
 			address -- Absolute address of data. If `None` then `self.start` address.
 			data -- Data to split to pages.
-		
+
 		Returns list of (page_address, page_data)
 		"""
 		if start is None:
@@ -82,7 +71,7 @@ class AddressRange():
 			raise OutOfRangeException(self, start, len(data))
 		end = start + len(data)
 		ret = []
-		for page_address in xrange(self.start, self.start + self.length, self.page_size):
+		for page_address in range(self.start, self.start + self.length, self.page_size):
 			if page_address < end and page_address + self.page_size > start:
 				# move data chunk to ret
 				page_data_len = min(len(data), self.page_size - (start - page_address))
@@ -100,7 +89,7 @@ class AddressRange():
 		Args:
 			start -- Absolute address of region. If `None` then `self.start` address.
 			length -- Length of region. If `None` then `self.length`.
-		
+
 		Returns list of (address, length)
 		"""
 		if start is None:
@@ -113,7 +102,7 @@ class AddressRange():
 			raise OutOfRangeException(self, start, length)
 		end = start + length
 		ret = []
-		for page_address in xrange(self.start, self.start + self.length, self.page_size):
+		for page_address in range(self.start, self.start + self.length, self.page_size):
 			if page_address < end and page_address + self.page_size > start:
 				page_length = min(length, self.page_size - (start - page_address))
 				ret.append((start, page_length))
@@ -150,7 +139,7 @@ class FlashControllerBase(object):
 
 		chunk = []
 
-		for offset in xrange(len(data)):
+		for offset in range(len(data)):
 			if offset and (address + offset) % flash_page_size == 0:
 				yield (address, chunk)
 
@@ -165,7 +154,7 @@ class FlashControllerBase(object):
 
 	@staticmethod
 	def _is_equal(buff1, buff2):
-		for i in xrange(len(buff1)):
+		for i in range(len(buff1)):
 			if buff1[i] != buff2[i]:
 				return False
 		return True
@@ -174,7 +163,7 @@ class FlashControllerBase(object):
 	@abc.abstractmethod
 	def get_info(self):
 		"""Read special registers. This varying for different flash controllers.
-		
+
 		Returns:
 			flash controller info as text.
 		"""

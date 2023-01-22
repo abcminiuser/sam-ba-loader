@@ -1,12 +1,16 @@
+#
+#      Open Source SAM-BA Programmer
+#      Released under the MIT license
+#
+#   dean [at] fourwalledcubicle [dot] com
+#         www.fourwalledcubicle.com
+#
+
 # Enhanced Embedded Flash Controller (EEFC) driver for Atmel SAM
 
 from time import time, sleep
 import logging
-try:
-	xrange
-except NameError:
-	# Remap xrange to range for Python 3
-	xrange = range
+
 from . import FlashController
 
 
@@ -95,7 +99,7 @@ class Flash(FlashController.FlashControllerBase):
 			if time() - start_timestamp >= timeout:
 				raise Exception('Flash busy: timeout. FSR: ' + str(self.samba.read_word(self.regs_base_address + self.FSR_OFFSET)))
 			sleep(.001)
-				
+
 		if printed:
 			self.LOG.debug('Flash was busy for {:.3f}s'.format(time() - start_timestamp))
 
@@ -117,7 +121,7 @@ class Flash(FlashController.FlashControllerBase):
 			command = self.FCR_CMDA[command]
 
 		reg  = self.FCR_FKEY | ((farg & 0xFFFF) << 8) | (command & 0xFF)
-		
+
 		self.LOG.debug('EEFC_FCR @ 0x{:08X} = 0x{:08X}'.format(self.regs_base_address + self.FCR_OFFSET, reg))
 		self.samba.write_word(self.regs_base_address + self.FCR_OFFSET, reg)
 		# check for error
@@ -138,7 +142,7 @@ class Flash(FlashController.FlashControllerBase):
 		def append_bytes(offset_byte, length=None):
 			if length is None:
 				length = 4 - offset_byte % 4
-			for i in xrange(offset_byte, offset_byte + length):
+			for i in range(offset_byte, offset_byte + length):
 				ret.append(buff >> i * 8 & 0xFF)
 		ret = bytearray()
 		if address % 4 != 0:
@@ -146,7 +150,7 @@ class Flash(FlashController.FlashControllerBase):
 			append_bytes(address % 4, min(4 - address % 4, length))
 			length -= 4 - address % 4
 			address += 4 - address % 4
-		for i in xrange(address, address + length, 4):
+		for i in range(address, address + length, 4):
 			buff = self.samba.read_word(i)
 			append_bytes(0, min(address + length - i, 4))
 		return ret
@@ -202,7 +206,7 @@ class Flash(FlashController.FlashControllerBase):
 
 	def get_info(self):
 		"""Read special registers & flash regions.
-		
+
 		Returns:
 			flash controller info as text.
 		"""
@@ -270,7 +274,7 @@ class Flash(FlashController.FlashControllerBase):
 			else:
 				# checks it's needs to turn from 0 to 1 for any bit
 				need_erase = False
-				for i in xrange(len(buff)):
+				for i in range(len(buff)):
 					if buff[i] & chunk_data[i] != chunk_data[i]:
 						need_erase = True
 						break
@@ -290,7 +294,7 @@ class Flash(FlashController.FlashControllerBase):
 					chunk_data += list(buff)
 				# now chunk_address & chunk_data is aligned
 				# write to page buffer with 32 bit words
-				for i in xrange(0, len(chunk_data), 4):
+				for i in range(0, len(chunk_data), 4):
 					buff = chunk_data[i] | chunk_data[i + 1] << 8 | chunk_data[i + 2] << 16 | chunk_data[i + 3] << 24
 					self.samba.write_word(chunk_address + i, buff)
 				self._command('EWP' if need_erase else 'WP', chunk_address // self.flash_address_range.page_size)

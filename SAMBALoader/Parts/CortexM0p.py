@@ -1,12 +1,10 @@
 #
 #      Open Source SAM-BA Programmer
-#     Copyright (C) Dean Camera, 2016.
+#      Released under the MIT license
 #
-#  dean [at] fourwalledcubicle [dot] com
-#       www.fourwalledcubicle.com
+#   dean [at] fourwalledcubicle [dot] com
+#         www.fourwalledcubicle.com
 #
-#
-# Released under a MIT license, see LICENCE.txt.
 
 from . import Part
 from .. import FlashControllers
@@ -57,7 +55,7 @@ class CortexM0p(Part.PartBase):
 
 	def get_info(self):
 		"""Read special registers.
-		
+
 		Returns:
 			part info as text.
 		"""

@@ -1,3 +1,10 @@
+#
+#      Open Source SAM-BA Programmer
+#      Released under the MIT license
+#
+#   dean [at] fourwalledcubicle [dot] com
+#         www.fourwalledcubicle.com
+#
 
 import logging
 from . import Parts
@@ -18,8 +25,6 @@ def _get_subclasses(classname):
 
 
 class CannotRecognizeChipException(Exception):
-
-
 	def __init__(self, message='', register_name=None, register_addresses=None):
 		"""
 		Args:
@@ -41,8 +46,6 @@ class CannotRecognizeChipException(Exception):
 
 
 class PartLibrary(object):
-
-
 	"""Part library class, which lists all supported devices and provides
 	   methods to retrieve a given part by its chip identifiers, or by name.
 	"""

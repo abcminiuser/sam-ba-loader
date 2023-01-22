@@ -1,12 +1,10 @@
 #
 #      Open Source SAM-BA Programmer
-#     Copyright (C) Dean Camera, 2016.
+#      Released under the MIT license
 #
-#  dean [at] fourwalledcubicle [dot] com
-#       www.fourwalledcubicle.com
+#   dean [at] fourwalledcubicle [dot] com
+#         www.fourwalledcubicle.com
 #
-#
-# Released under a MIT license, see LICENCE.txt.
 
 import logging
 from . import Transports
@@ -86,11 +84,11 @@ class SAMBA(object):
 			Serialized SAMBA command with the embedded arguments (if any).
 		"""
 
-		if arguments is None or len(arguments) is 0:
+		if arguments is None or len(arguments) == 0:
 			arguments = ''
-		elif len(arguments) is 1:
+		elif len(arguments) == 1:
 			arguments = self._to_32bit_hex(arguments[0]) + ','
-		elif len(arguments) is 2:
+		elif len(arguments) == 2:
 			arguments = self._to_32bit_hex(arguments[0]) + ',' + self._to_32bit_hex(arguments[1])
 		else:
 			raise AssertionError('Invalid SAMBA command argument count: %d' % len(arguments))

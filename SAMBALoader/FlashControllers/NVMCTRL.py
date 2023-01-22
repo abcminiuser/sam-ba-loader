@@ -1,20 +1,12 @@
 #
 #      Open Source SAM-BA Programmer
-#     Copyright (C) Dean Camera, 2016.
+#      Released under the MIT license
 #
-#  dean [at] fourwalledcubicle [dot] com
-#       www.fourwalledcubicle.com
+#   dean [at] fourwalledcubicle [dot] com
+#         www.fourwalledcubicle.com
 #
-#
-# Released under a MIT license, see LICENCE.txt.
 
 from . import FlashController
-
-try:
-	xrange
-except NameError:
-	# Remap xrange to range for Python 3
-	xrange = range
 
 
 class NVMCTRL(FlashController.FlashControllerBase):
@@ -88,7 +80,7 @@ class NVMCTRL(FlashController.FlashControllerBase):
 
 	def get_info(self):
 		"""Read special registers.
-		
+
 		Returns:
 			flash controller info as text.
 		"""
@@ -113,7 +105,7 @@ class NVMCTRL(FlashController.FlashControllerBase):
 		start_address -= start_address % (self.PAGES_PER_ROW * self.page_size)
 		end_address   -= end_address   % (self.PAGES_PER_ROW * self.page_size)
 
-		for offset in xrange(start_address, end_address, self.PAGES_PER_ROW * self.page_size):
+		for offset in range(start_address, end_address, self.PAGES_PER_ROW * self.page_size):
 			samba.write_word(self.base_address + self.ADDRESS_OFFSET, offset >> 1)
 
 			self._command(samba, self.CTRLA_CMDA['ER'])
@@ -137,7 +129,7 @@ class NVMCTRL(FlashController.FlashControllerBase):
 		self._wait_while_busy(samba)
 
 		for (chunk_address, chunk_data) in self._chunk(self.page_size, address, data):
-			for offset in xrange(0, len(chunk_data), 4):
+			for offset in range(0, len(chunk_data), 4):
 				word = sum([x << (8 * i) for i, x in enumerate(chunk_data[offset : offset + 4])])
 				samba.write_word(chunk_address + offset, word)
 
@@ -163,7 +155,7 @@ class NVMCTRL(FlashController.FlashControllerBase):
 		for (chunk_address, chunk_data) in self._chunk(self.page_size, address, data):
 			actual_data = samba.read_block(chunk_address, len(chunk_data))
 
-			for offset in xrange(0, len(chunk_data), 4):
+			for offset in range(0, len(chunk_data), 4):
 				expected_word = sum([x << (8 * i) for i, x in enumerate(chunk_data[offset : offset + 4])])
 				actual_word   = sum([x << (8 * i) for i, x in enumerate(actual_data[offset : offset + 4])])
 
